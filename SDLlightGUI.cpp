@@ -2,6 +2,15 @@
 
 #include "SDLLightGUI.h"
 
+void changeText(void** parameters)
+{
+    LGUI::Button* button = (LGUI::Button*)parameters[1];
+    LGUI::Window* window = (LGUI::Window*)parameters[0];
+    std::string txt("Geklickt!");
+    window->setColor(LGUI::RGBA(100,0,0,255));
+    //button->setText(txt, 12, window->getRenderer());
+}
+
 int main(int args, char** arg)
 {
     std::string title = "Light GUI Demo";
@@ -18,9 +27,11 @@ int main(int args, char** arg)
 
         SDL_RenderPresent(renderer); // copy to screen
     */
-
-    window.addComponent(new LGUI::Button(100,50,50,30,std::string("Button 1"),LGUI::RGBA(50,50,0,255),LGUI::RGBA(255,0,0,0), &window));
+    LGUI::Button* button1 = new LGUI::Button(100,50,50,30,std::string("Button 1"),LGUI::RGBA(50,50,0,255),LGUI::RGBA(255,0,0,0), &window);
+    window.addComponent(button1);
     window.setResizable(true);
+
+    button1->setOnLeftClick(changeText);
     while (window.update()) //window main loop
     {
         

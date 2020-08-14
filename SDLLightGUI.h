@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+#include <unistd.h>
+
 namespace LGUI
 {
 
@@ -71,7 +73,8 @@ namespace LGUI
 
     class Text: public UIComponent
     {
-        TTF_Font* font;
+        
+        std::string fontPath;
         std::string text;
         SDL_Color foregroundColor;
         SDL_Color backgroundColor;
@@ -83,16 +86,15 @@ namespace LGUI
         {
             foregroundColor = { 255, 255, 255, 255};
             backgroundColor = { 0, 0, 0, 0};
-            font = 0;
             textSurface = 0;
         }
-        Text(std::string font ,int textSize, std::string text, int x, int y, Window* window);
+        Text(std::string fontFilePath ,int textSize, std::string text, int x, int y, Window* window);
 
         bool update(Window* window);
 
         void operator = (Text other)
         {
-            font = other.font;
+            fontPath = other.fontPath;
             text = other.text;
             foregroundColor.r = other.foregroundColor.r;
             foregroundColor.g = other.foregroundColor.g;
@@ -109,66 +111,62 @@ namespace LGUI
 
         ~Text()
         {
-            if(font!=0)
+            if(texture!=0)
             {
-                //TTF_CloseFont(font);
-            }
-            if(textSurface!=0)
-            {
-                //SDL_FreeSurface(textSurface);
+                SDL_DestroyTexture(texture);
             }
         }
-        void setFont(std::string& font ,int textSize)
-        {
-            this->font = TTF_OpenFont(font.c_str(), textSize);
-        }
-        void setText(std::string& text)
+        void setText(std::string& text,int fontSize,  SDL_Renderer* renderer)
         {
             this->text = text;
+            //setFont(fontPath, 12);
+            TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
+            if(font)
+            {
+                textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
+                //SDL_DestroyTexture(texture);
+                texture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                SDL_FreeSurface(textSurface);
+            }
+            TTF_CloseFont(font);
         }
         std::string getText()
         {
             return text;
         }
-        void setBackground(RGBA color, SDL_Renderer* rendere)
+        void setBackground(RGBA color,int fontSize, SDL_Renderer* renderer)
         {
             backgroundColor.r = color.r;
             backgroundColor.g = color.g;
             backgroundColor.b = color.b;
             backgroundColor.a = color.a;
-            if(textSurface)
-            {
-                SDL_FreeSurface(textSurface);
-            }
+            //setFont(fontPath, 12);
+            TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
             if(font)
             {
                 textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
-                if(texture)
-                {
-                    SDL_DestroyTexture(texture);
-                }
-                texture = SDL_CreateTextureFromSurface(rendere, textSurface);
+                //SDL_DestroyTexture(texture);
+                texture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                SDL_FreeSurface(textSurface);
             }
+            TTF_CloseFont(font);
         }
-        void setColor(RGBA color, SDL_Renderer* rendere)
+        void setColor(RGBA color,int fontSize, SDL_Renderer* rendere)
         {
             foregroundColor.r = color.r;
             foregroundColor.g = color.g;
             foregroundColor.b = color.b;
             foregroundColor.a = color.a;
-            if(textSurface)
-            {
-                SDL_FreeSurface(textSurface);
-            }
+            //setFont(fontPath, 12);
+            TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
             if(font)
             {
                 textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
-                if(texture)
-                {
-                    SDL_DestroyTexture(texture);
-                }
+                //SDL_DestroyTexture(texture);
                 texture = SDL_CreateTextureFromSurface(rendere, textSurface);
+                SDL_FreeSurface(textSurface);
             }
+            TTF_CloseFont(font);
         }
 
     };
@@ -180,25 +178,40 @@ namespace LGUI
         Text text;
         RGBA fill;
         RGBA border;
+
+        
+
+        void* onLeftClick;
+        void* onRightClick;
         public:
 
         Button(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
 
         bool update(Window* window, SDL_Event& event) override;
 
-        void setText(std::string& text)
+        void setText(std::string& text, int fontSize, SDL_Renderer* renderer)
         {
-            this->text.setText(text);
+            this->text.setText(text, fontSize, renderer);
         }
 
-        void setTextColor(RGBA color, SDL_Renderer* renderer)
+        void setTextColor(RGBA color, int fontSize, SDL_Renderer* renderer)
         {
-            text.setColor(color, renderer);
+            text.setColor(color, fontSize, renderer);
         }
 
         std::string getText()
         {
             return this->text.getText();
+        }
+
+        void setOnLeftClick(void (*event)(void** parameters))
+        {
+            onLeftClick = (void*)(event);
+        }
+
+        void setOnRightClick(void (*event)(void** parameters))
+        {
+            onRightClick = (void*)(event);
         }
 
     };
@@ -210,7 +223,7 @@ namespace LGUI
         SDL_Renderer* renderer;
         SDL_Event event;
         std::vector<UIComponent*> components;
-
+        unsigned long framedelay;
         public:
 
 
@@ -236,11 +249,12 @@ namespace LGUI
                                        SDL_WINDOWPOS_CENTERED, 
                                        width, hight, 0); 
             renderer = SDL_CreateRenderer(window, -1, 0);
-            SDL_Delay(1000/fps);
+            framedelay = 1000/fps;
             setColor(255, 255, 255, 255);
             clearBackground();
             updateScreen();
         }
+
 
         ~Window()
         {
@@ -325,8 +339,9 @@ namespace LGUI
 
         void updateScreen()
         {
-            SDL_UpdateWindowSurface(window);
+            //SDL_UpdateWindowSurface(window);
             SDL_RenderPresent(renderer);
+
         }      
 
 
@@ -363,8 +378,9 @@ namespace LGUI
 
             if(refresh)
             {
-                updateScreen();
+                //updateScreen();
             }
+            //usleep(framedelay);
             return true;
         }
 
@@ -377,9 +393,39 @@ namespace LGUI
         SDL_RenderFillRect(window->getRenderer(), &box);
         text.update(window);
 
-        if(event.type == SDL_MOUSE_TOUCHID || event.type == SDL_KEYDOWN)
+        if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
         {
-            return true;
+            if(event.button.x >= box.x && event.button.x <= box.x+box.w)
+            {
+                if(event.button.y >= box.y && event.button.y <= box.y+box.h)
+                {
+                    if(onLeftClick != NULL)
+                    {
+                        void* arr[2];
+                        arr[0] = window;
+                        arr[1] = this;
+                        ((void ((*)(void**)))(onLeftClick))(arr);
+                        return true;
+                    }
+                }
+            }
+        }
+        if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
+        {
+            if(event.button.x >= box.x && event.button.x <= box.x+box.w)
+            {
+                if(event.button.y >= box.y && event.button.y <= box.y+box.h)
+                {
+                    if(onRightClick != NULL)
+                    {
+                        void* arr[2];
+                        arr[0] = window;
+                        arr[1] = this;
+                        ((void ((*)(void**)))(onRightClick))(arr);
+                        return true;
+                    }
+                }
+            }
         }
 
         return false;
@@ -390,22 +436,28 @@ namespace LGUI
         SDL_RenderCopy(window->getRenderer(), texture, NULL, &position);
     }
 
-    Text::Text(std::string font ,int textSize, std::string text, int x, int y, Window* window)
+    Text::Text(std::string fontFilePath ,int textSize, std::string text, int x, int y, Window* window)
     {
         foregroundColor = { 255, 255, 255, 255};
         backgroundColor = { 255, 255, 255, 0};
-        setFont(font, textSize);
+        fontPath = fontFilePath;
         this->text = text;
         position.h = textSize + 1;
         position.w = text.length()*5+1;
         position.x = x;
         position.y = y;
-        textSurface = TTF_RenderText_Shaded(this->font, text.c_str(), foregroundColor, backgroundColor);
+        TTF_Font* font = TTF_OpenFont(fontPath.c_str(), textSize);
+        textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
         texture = SDL_CreateTextureFromSurface(window->getRenderer(), textSurface);
+        SDL_FreeSurface(textSurface);
+        //textSurface = 0;
+        TTF_CloseFont(font);
     }
 
     Button::Button(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize = 12)
     {
+        onRightClick = NULL;
+        onLeftClick = NULL;
         box.x = x;
         box.y = y;
         box.w = width;
@@ -413,10 +465,10 @@ namespace LGUI
         fill = colorFill;
         border = colorBorder;
         this->text = Text("./Arial.ttf", textSize, text, x+width-text.size()*textSize/2+1, y+textSize/2, window);
-        this->text.setBackground(fill, window->getRenderer());
+        this->text.setBackground(fill, textSize, window->getRenderer());
     }
 
-
+    
 
 
 
@@ -433,6 +485,4 @@ namespace LGUI
 
 
 }
-
-
 
