@@ -8,6 +8,8 @@
 
 #include <unistd.h>
 
+#include <stdio.h>
+
 namespace LGUI
 {
 
@@ -111,6 +113,7 @@ namespace LGUI
 
         ~Text()
         {
+            SDL_FreeSurface(textSurface);
             if(texture!=0)
             {
                 SDL_DestroyTexture(texture);
@@ -123,10 +126,10 @@ namespace LGUI
             TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
             if(font)
             {
+                SDL_FreeSurface(textSurface);
                 textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
                 //SDL_DestroyTexture(texture);
                 texture = SDL_CreateTextureFromSurface(renderer, textSurface);
-                SDL_FreeSurface(textSurface);
             }
             TTF_CloseFont(font);
         }
@@ -144,10 +147,10 @@ namespace LGUI
             TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
             if(font)
             {
+                SDL_FreeSurface(textSurface);
                 textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
                 //SDL_DestroyTexture(texture);
                 texture = SDL_CreateTextureFromSurface(renderer, textSurface);
-                SDL_FreeSurface(textSurface);
             }
             TTF_CloseFont(font);
         }
@@ -161,10 +164,10 @@ namespace LGUI
             TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
             if(font)
             {
+                SDL_FreeSurface(textSurface);
                 textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
                 //SDL_DestroyTexture(texture);
                 texture = SDL_CreateTextureFromSurface(rendere, textSurface);
-                SDL_FreeSurface(textSurface);
             }
             TTF_CloseFont(font);
         }
@@ -186,6 +189,8 @@ namespace LGUI
         public:
 
         Button(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
+
+        bool update(Window* event) override;
 
         bool update(Window* window, SDL_Event& event) override;
 
@@ -272,8 +277,8 @@ namespace LGUI
         void addComponent(UIComponent* component)
         {
             components.push_back(component);
-            update();
-            updateScreen();
+            //update();
+            //updateScreen();
         }
 
         void setWindowMode(SDL_DisplayMode* mode)
@@ -341,7 +346,7 @@ namespace LGUI
         {
             //SDL_UpdateWindowSurface(window);
             SDL_RenderPresent(renderer);
-
+            usleep(framedelay);
         }      
 
 
@@ -351,7 +356,7 @@ namespace LGUI
             setColor(RGBA(255,255,255,255));
             clearBackground();
             
-            while (SDL_PollEvent(&event))
+            if (SDL_PollEvent(&event))
             { 
                 for(int i = 0; i < components.size(); i++)
                 {
@@ -366,19 +371,24 @@ namespace LGUI
                     return false;
                 }
             }
-
-            for(int i = 0; i < components.size(); i++)
+            else
             {
-                if(components.at(i)->update(this))
+                for(int i = 0; i < components.size(); i++)
                 {
-                    refresh = true;
+                    if(components.at(i)->update(this))
+                    {
+                        refresh = true;
+                    }
                 }
             }
             
 
+            
+            
+
             if(refresh)
             {
-                //updateScreen();
+                updateScreen();
             }
             //usleep(framedelay);
             return true;
@@ -386,6 +396,13 @@ namespace LGUI
 
 
     };
+
+    bool Button::update(Window* window)
+    {
+        window->setColor(fill);
+        SDL_RenderFillRect(window->getRenderer(), &box);
+        text.update(window);
+    }
 
     bool Button::update(Window* window, SDL_Event& event)
     {
@@ -433,7 +450,10 @@ namespace LGUI
 
     bool Text::update(Window* window)
     {
-        SDL_RenderCopy(window->getRenderer(), texture, NULL, &position);
+        if(SDL_RenderCopy(window->getRenderer(), texture, NULL, &position) != 0)
+        {
+            printf("SDL-Error: %s\n", SDL_GetError());
+        }
     }
 
     Text::Text(std::string fontFilePath ,int textSize, std::string text, int x, int y, Window* window)
@@ -449,7 +469,7 @@ namespace LGUI
         TTF_Font* font = TTF_OpenFont(fontPath.c_str(), textSize);
         textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
         texture = SDL_CreateTextureFromSurface(window->getRenderer(), textSurface);
-        SDL_FreeSurface(textSurface);
+        //SDL_FreeSurface(textSurface);
         //textSurface = 0;
         TTF_CloseFont(font);
     }
@@ -464,8 +484,8 @@ namespace LGUI
         box.h = hight;
         fill = colorFill;
         border = colorBorder;
-        this->text = Text("./Arial.ttf", textSize, text, x+width-text.size()*textSize/2+1, y+textSize/2, window);
-        this->text.setBackground(fill, textSize, window->getRenderer());
+        //this->text = Text("./Arial.ttf", textSize, text, x+width-text.size()*textSize/2+1, y+textSize/2, window);
+        //this->text.setBackground(fill, textSize, window->getRenderer());
     }
 
     
