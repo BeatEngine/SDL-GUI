@@ -9,7 +9,8 @@ void changeText(void** parameters)
     std::string txt("Geklickt!");
     //window->setTitle(txt);
     
-    //button->setText(txt, 12, window->getRenderer());
+    //button->setTextColor(LGUI::RGBA(0, 0, 0, 255),12, window->getRenderer());
+    button->setText(txt, window->getRenderer());
     printf("Set text!\n");
 }
 
@@ -18,7 +19,7 @@ int main(int args, char** arg)
     std::string title = "Light GUI Demo";
     LGUI::Window window(title, 1000, 1000);
     
-    LGUI::Button* button1 = new LGUI::Button(100,50,50,30,std::string("Button 1"),LGUI::RGBA(50,50,0,255),LGUI::RGBA(255,0,0,0), &window);
+    LGUI::Button* button1 = new LGUI::Button(100,50,70,30,std::string("Button 1"),LGUI::RGBA(200,200,200,255),LGUI::RGBA(200,200,200,255), &window);
     window.addComponent(button1);
     window.setResizable(true);
 
