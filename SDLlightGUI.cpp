@@ -43,18 +43,20 @@ int main(int args, char** arg)
 
     LGUI::InputBox* input1 = new LGUI::InputBox(300, 50,130,30,std::string(""),LGUI::RGBA(255,255,255,255),LGUI::RGBA(100,100,100,255), &window);
 
+    LGUI::RadioBox* radio1 = new LGUI::RadioBox(40, 65, 7, std::string("Radio 1"),LGUI::RGBA(200,200,200,255),LGUI::RGBA(100,100,100,255), &window);
+
     window.addComponent(button1);
     window.addComponent(input1);
+    window.addComponent(radio1);
     window.setResizable(true);
 
     button1->setOnLeftClick(changeText);
     input1->setOnLeftClick(textboxOnClick);
+    radio1->setBorder(LGUI::RGBA(0,0,0,255), 2);
     while (window.update()) //window main loop
     {
         window.updateScreen();
     }
-                                       
-
 
     return 0;
 }
