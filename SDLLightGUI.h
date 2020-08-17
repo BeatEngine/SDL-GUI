@@ -223,8 +223,15 @@ namespace LGUI
         tx->pitch = other->pitch;
         tx->refcount = other->refcount;
         tx->userdata = other->userdata;
-        tx->pixels = (Uint8*)calloc(tx->w * tx->h, 4);
-        memcpy(tx->pixels, other->pixels, 4 * tx->w * tx->h);
+        if(other->pixels)
+        {
+            tx->pixels = (Uint8*)calloc(tx->w * tx->h, 4);
+            memcpy(tx->pixels, other->pixels, 4 * tx->w * tx->h);
+        }
+        else
+        {
+            tx->pixels = 0;
+        }
         tx->map = new SDL_BlitMap_Wrapper(other->map);
         return (SDL_Surface*)tx;
     }
@@ -318,9 +325,17 @@ namespace LGUI
             backgroundColor.b = other.backgroundColor.b;
             backgroundColor.a = other.backgroundColor.a;
             //textSurface = other.textSurface;
-            textSurface = copySurface(other.textSurface);
+            textSurface = 0;
+            if(other.textSurface != 0)
+            {
+                textSurface = copySurface(other.textSurface);
+            }
             position = other.position;
-            texture = copyTexture(other.texture);
+            texture = 0;
+            if(other.texture != 0)
+            {
+                texture = copyTexture(other.texture);
+            }
             sizePT = other.sizePT;
         }
 
@@ -345,6 +360,9 @@ namespace LGUI
                 fontSize = sizePT;
             }
             sizePT = fontSize;
+
+            position.w = text.size()*sizePT/2.150;
+            position.h = sizePT*5/4;
             TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
             if(font)
             {
@@ -404,7 +422,7 @@ namespace LGUI
         RGBA fill;
         RGBA border;
 
-        
+        int borderSize = 1;
 
         void* onLeftClick;
         void* onRightClick;
@@ -431,6 +449,12 @@ namespace LGUI
             text.setColor(color, fontSize, renderer);
         }
 
+        void setBorder(RGBA color, int size = 1)
+        {
+            border = color;
+            borderSize = size;
+        }
+
         std::string getText()
         {
             return this->text.getText();
@@ -447,6 +471,90 @@ namespace LGUI
         }
 
     };
+
+    class InputBox: public UIComponent
+    {
+
+        SDL_Rect box;
+        Text text;
+        RGBA fill;
+        RGBA border;
+
+        int borderSize = 1;
+
+        void* onLeftClick;
+        void* onRightClick;
+
+        bool selected = false;
+
+        std::string textPart = "";
+
+        void append(char* txt, SDL_Renderer* renderer)
+        {
+            std::string tex = getText() + std::string(txt);
+            setText(tex, renderer);
+        }
+
+        public:
+
+        bool isSelected()
+        {
+            return selected;
+        }
+
+        InputBox(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
+
+        bool update(Window* event) override;
+
+        bool update(Window* window, SDL_Event& event) override;
+
+        void setText(std::string& text, SDL_Renderer* renderer, int fontSize = -1)
+        {
+
+            while(text.length() > 0 && box.w-getTextSize() < text.length()*getTextSize()/2.150)
+            {
+                char tmp[2] = {0};
+                tmp[0] = text.at(0);
+                textPart.append(tmp, 1);
+                text.erase(text.begin());
+            }
+            this->text.setText(text, renderer, fontSize);
+        }
+
+        int getTextSize()
+        {
+            return text.getFontSize();
+        }
+
+        void setTextColor(RGBA color, int fontSize, SDL_Renderer* renderer)
+        {
+            text.setColor(color, fontSize, renderer);
+        }
+
+        void setBorder(RGBA color, int size = 1)
+        {
+            border = color;
+            borderSize = size;
+        }
+
+        std::string getText()
+        {
+            return textPart + this->text.getText();
+        }
+
+        void setOnLeftClick(void (*event)(void** parameters))
+        {
+            onLeftClick = (void*)(event);
+        }
+
+        void setOnRightClick(void (*event)(void** parameters))
+        {
+            onRightClick = (void*)(event);
+        }
+
+    };
+
+    
 
     class Window
     {
@@ -628,6 +736,16 @@ namespace LGUI
     {
         window->setColor(fill);
         SDL_RenderFillRect(window->getRenderer(), &box);
+        window->setColor(border);
+        SDL_Rect tmp = box;
+        for(int i = 0; i < borderSize; i++)
+        {
+            SDL_RenderDrawRect(window->getRenderer(), &tmp);
+            tmp.h-=2;
+            tmp.w-=2;
+            tmp.x++;
+            tmp.y++;
+        }
         text.update(window);
     }
 
@@ -635,6 +753,16 @@ namespace LGUI
     {
         window->setColor(fill);
         SDL_RenderFillRect(window->getRenderer(), &box);
+        window->setColor(border);
+        SDL_Rect tmp = box;
+        for(int i = 0; i < borderSize; i++)
+        {
+            SDL_RenderDrawRect(window->getRenderer(), &tmp);
+            tmp.h-=2;
+            tmp.w-=2;
+            tmp.x++;
+            tmp.y++;
+        }
         text.update(window);
 
         if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
@@ -677,9 +805,12 @@ namespace LGUI
 
     bool Text::update(Window* window)
     {
-        if(SDL_RenderCopy(window->getRenderer(), texture, NULL, &position) != 0)
+        if(text.length()>0)
         {
-            printf("SDL-Error: %s\n", SDL_GetError());
+            if(SDL_RenderCopy(window->getRenderer(), texture, NULL, &position) != 0)
+            {
+                printf("Text: SDL-Error: %s\n", SDL_GetError());
+            }
         }
     }
 
@@ -696,6 +827,11 @@ namespace LGUI
         position.x = x;
         position.y = y;
         TTF_Font* font = TTF_OpenFont(fontPath.c_str(), textSize);
+        if(text.length() < 1)
+        {
+            this->text = "";
+            text = "  ";
+        }
         textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
         texture = SDL_CreateTextureFromSurface(window->getRenderer(), textSurface);
         TTF_CloseFont(font);
@@ -712,6 +848,120 @@ namespace LGUI
         fill = colorFill;
         border = colorBorder;
         this->text = Text("./Arial.ttf", textSize, text, x+width/2-text.size()*textSize/4.30, y+hight/2-(textSize*4/3)/2, text.size()*textSize/2.150, textSize*5/4, window);
+        this->text.setBackground(fill, window->getRenderer());
+    }
+
+    bool InputBox::update(Window* window)
+    {
+        window->setColor(fill);
+        SDL_RenderFillRect(window->getRenderer(), &box);
+        window->setColor(border);
+        SDL_Rect tmp = box;
+        for(int i = 0; i < borderSize; i++)
+        {
+            SDL_RenderDrawRect(window->getRenderer(), &tmp);
+            tmp.h-=2;
+            tmp.w-=2;
+            tmp.x++;
+            tmp.y++;
+        }
+        text.update(window);
+    }
+
+    bool InputBox::update(Window* window, SDL_Event& event)
+    {
+        window->setColor(fill);
+        SDL_RenderFillRect(window->getRenderer(), &box);
+        window->setColor(border);
+        SDL_Rect tmp = box;
+        for(int i = 0; i < borderSize; i++)
+        {
+            SDL_RenderDrawRect(window->getRenderer(), &tmp);
+            tmp.h-=2;
+            tmp.w-=2;
+            tmp.x++;
+            tmp.y++;
+        }
+        text.update(window);
+
+        if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+        {
+            if(event.button.x >= box.x && event.button.x <= box.x+box.w)
+            {
+                if(event.button.y >= box.y && event.button.y <= box.y+box.h)
+                {
+                    if(onLeftClick != NULL)
+                    {
+                        selected = !selected;
+                        void* arr[2];
+                        arr[0] = window;
+                        arr[1] = this;
+                        ((void ((*)(void**)))(onLeftClick))(arr);
+                        return true;
+                    }
+                }
+            }
+        }
+        if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
+        {
+            if(event.button.x >= box.x && event.button.x <= box.x+box.w)
+            {
+                if(event.button.y >= box.y && event.button.y <= box.y+box.h)
+                {
+                    if(onRightClick != NULL)
+                    {
+                        void* arr[2];
+                        arr[0] = window;
+                        arr[1] = this;
+                        ((void ((*)(void**)))(onRightClick))(arr);
+                        return true;
+                    }
+                }
+            }
+        }
+        if(event.type == SDL_KEYDOWN && selected)
+        {
+            //append(event.text.text, window->getRenderer());
+            char ptr[2] = {0};
+            ptr[0] = event.key.keysym.sym;
+            append(ptr, window->getRenderer());
+            /*if(event.button.x >= box.x && event.button.x <= box.x+box.w)
+            {
+                if(event.button.y >= box.y && event.button.y <= box.y+box.h)
+                {
+                    if(onRightClick != NULL)
+                    {
+                        void* arr[2];
+                        arr[0] = window;
+                        arr[1] = this;
+                        ((void ((*)(void**)))(onRightClick))(arr);
+                        return true;
+                    }
+                }
+            }*/
+        }
+
+        return false;
+    }
+
+    InputBox::InputBox(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize = 12)
+    {
+        onRightClick = NULL;
+        onLeftClick = NULL;
+        box.x = x;
+        box.y = y;
+        box.w = width;
+        box.h = hight;
+        fill = colorFill;
+        border = colorBorder;
+        if(text.length()==0)
+        {
+            this->text = Text("./Arial.ttf", textSize, text, x+5, y+hight/2-(textSize*4/3)/2, 1, textSize*5/4, window);
+        }
+        else
+        {
+            this->text = Text("./Arial.ttf", textSize, text, x+5, y+hight/2-(textSize*4/3)/2, text.size()*textSize/2.150, textSize*5/4, window);
+        }
         this->text.setBackground(fill, window->getRenderer());
     }
 
