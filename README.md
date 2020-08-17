@@ -5,6 +5,8 @@ Build:
 
 cd SDL2-2.0.12
 
+sudo apt install xorg-dev (REQUIED FOR UBUNTU)
+
 ./configure; make;
 
 sudo make install
