@@ -76,9 +76,11 @@ class Text: public UIComponent
             position.w = text.size()*sizePT/2.150;
             position.h = sizePT*5/4;
             TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
+            
             if(font)
             {
                 SDL_FreeSurface(textSurface);
+                TTF_SizeText(font, text.c_str(), &position.w, &position.h);
                 textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
                 //SDL_DestroyTexture(texture);
                 texture = SDL_CreateTextureFromSurface(renderer, textSurface);
@@ -100,6 +102,7 @@ class Text: public UIComponent
             if(font)
             {
                 SDL_FreeSurface(textSurface);
+                TTF_SizeText(font, text.c_str(), &position.w, &position.h);
                 textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
                 //SDL_DestroyTexture(texture);
                 texture = SDL_CreateTextureFromSurface(renderer, textSurface);
@@ -107,6 +110,24 @@ class Text: public UIComponent
             }
             
         }
+
+        void setPositionCenter(int x, int y)
+        {
+            position.x = x - position.w/2;
+            position.y = y - position.h/2;
+        }
+
+        void setPosition(int x, int y)
+        {
+            position.x = x;
+            position.y = y;
+        }
+
+        SDL_Rect& getPosition()
+        {
+            return position;
+        }
+
         void setColor(RGBA color,int fontSize, SDL_Renderer* rendere)
         {
             foregroundColor.r = color.r;
@@ -118,6 +139,7 @@ class Text: public UIComponent
             if(font)
             {
                 SDL_FreeSurface(textSurface);
+                TTF_SizeText(font, text.c_str(), &position.w, &position.h);
                 textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
                 //SDL_DestroyTexture(texture);
                 texture = SDL_CreateTextureFromSurface(rendere, textSurface);

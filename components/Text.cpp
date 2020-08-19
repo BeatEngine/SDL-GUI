@@ -32,6 +32,8 @@ namespace LGUI
             this->text = "";
             text = "  ";
         }
+        TTF_SizeText(font, text.c_str(), &position.w, &position.h);
+        setPosition(x, y);
         textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
         texture = SDL_CreateTextureFromSurface(window->getRenderer(), textSurface);
         TTF_CloseFont(font);

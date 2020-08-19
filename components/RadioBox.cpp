@@ -11,7 +11,9 @@ namespace LGUI
         this->radius = radius;
         this->x = x + radius;
         this->y = y + radius;
-        this->text = Text("./Arial.ttf", textSize, text, this->x+radius+5, this->y-(textSize*5/4)/2, text.size()*textSize/2.150, textSize*5/4, window);
+        this->text = Text("./Arial.ttf", textSize, text, this->x+radius+5, this->y-textSize/2, text.size()*textSize/2.150, textSize*5/4, window);
+        this->text.setPositionCenter(this->x, this->y);
+        this->text.setPosition(this->x+radius+5, this->text.getPosition().y);
         this->text.setBackground(RGBA(255,255,255,0), window->getRenderer());
     }
 

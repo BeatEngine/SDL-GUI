@@ -12,6 +12,7 @@ namespace LGUI
         fill = colorFill;
         border = colorBorder;
         this->text = Text("./Arial.ttf", textSize, text, x+width/2-text.size()*textSize/4.30, y+hight/2-(textSize*4/3)/2, text.size()*textSize/2.150, textSize*5/4, window);
+        this->text.setPositionCenter(x + box.w/2, y + box.h/2);
         this->text.setBackground(fill, window->getRenderer());
     }
 

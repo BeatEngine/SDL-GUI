@@ -98,6 +98,25 @@ int main(int args, char** arg)
     radio2->setBorder(LGUI::RGBA(70,70,70,255), 2);
     radio3->setBorder(LGUI::RGBA(70,70,70,255), 2);
     check1->setOnLeftClick(checkBoxOnClick);
+
+
+    LGUI::Button* button2 = new LGUI::Button(50, 440, 100, 20, std::string("Button in tab 1"), LGUI::RGBA(200,255,200,255), LGUI::RGBA(0,0,100,255), &window);
+    LGUI::Button* button3 = new LGUI::Button(50, 480, 100, 20, std::string("2. Button in tab 1"), LGUI::RGBA(200,255,200,255), LGUI::RGBA(0,0,100,255), &window);
+
+    LGUI::Button* button4 = new LGUI::Button(50, 440, 100, 20, std::string("Button in tab 2"), LGUI::RGBA(200,255,200,255), LGUI::RGBA(0,0,100,255), &window);
+    LGUI::Button* button5 = new LGUI::Button(200, 440, 100, 20, std::string("2. Button in tab 2"), LGUI::RGBA(200,255,200,255), LGUI::RGBA(0,0,100,255), &window);
+
+    LGUI::UIComponent* components1[] = {button2, button3, NULL};
+    LGUI::UIComponent* components2[] = {button4, button5, NULL};
+
+    LGUI::ContainerTab* tab1 = new LGUI::ContainerTab(std::string("Tab 1"), components1);
+    LGUI::ContainerTab* tab2 = new LGUI::ContainerTab(std::string("Tab 2"), components2);
+    LGUI::ContainerTab* tabs[] = {tab1, tab2, NULL};
+    LGUI::TabbedContainer* container = new LGUI::TabbedContainer(&window,tabs);
+
+    container->setPosition(0, 400, &window);
+
+    window.addComponent(container);
     while (window.update()) //window main loop
     {
         window.updateScreen();

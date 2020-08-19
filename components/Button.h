@@ -15,7 +15,18 @@ class Button: public UIComponent
 
         void* onLeftClick;
         void* onRightClick;
+        UIComponent* optionalParent;
         public:
+
+        Button(Button* other)
+        {
+
+        }
+
+        Button(Button& other)
+        {
+
+        }
 
         Button(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
 
@@ -44,6 +55,18 @@ class Button: public UIComponent
             borderSize = size;
         }
 
+        void setPosition(int x, int y, SDL_Renderer* renderer)
+        {
+            box.x = x;
+            box.y = y;
+            text.setPositionCenter(x + box.w/2, y + box.h/2);
+        }
+
+        SDL_Rect& getRect()
+        {
+            return box;
+        }
+
         std::string getText()
         {
             return this->text.getText();
@@ -57,6 +80,16 @@ class Button: public UIComponent
         void setOnRightClick(void (*event)(void** parameters))
         {
             onRightClick = (void*)(event);
+        }
+
+        UIComponent* getParentWhenSet()
+        {
+            return optionalParent;
+        }
+
+        void setParent(UIComponent* parent)
+        {
+            optionalParent = parent;
         }
 
     };

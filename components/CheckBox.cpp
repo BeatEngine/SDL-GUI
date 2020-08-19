@@ -14,6 +14,8 @@ namespace LGUI
         box.h = hight;
         borderSize = 2;
         this->text = Text("./Arial.ttf", textSize, text, x+width+5, y+hight/2-(textSize*5/4)/2, text.size()*textSize/2.150, textSize*5/4, window);
+        this->text.setPositionCenter(x, y + hight/2);
+        this->text.setPosition(x+width + 5, this->text.getPosition().y);
         this->text.setBackground(RGBA(255,255,255,0), window->getRenderer());
     }
 
