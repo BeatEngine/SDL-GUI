@@ -4,7 +4,7 @@ namespace LGUI
 
     bool Text::update(Window* window)
     {
-        if(text.length()>0)
+        if(text.length()>0 && !isHidden())
         {
             if(SDL_RenderCopy(window->getRenderer(), texture, NULL, &position) != 0)
             {

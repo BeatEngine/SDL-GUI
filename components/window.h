@@ -60,6 +60,18 @@ namespace LGUI
             //update();
             //updateScreen();
         }
+        
+        UIComponent* getComponent(unsigned int id)
+        {
+            for(int i = 0; i < components.size(); i++)
+            {
+                if(components.at(i)->getId() == id)
+                {
+                    return components.at(i);
+                }
+            }
+            return NULL;
+        }
 
         void setWindowMode(SDL_DisplayMode* mode)
         {
@@ -129,7 +141,7 @@ namespace LGUI
             usleep(framedelay);
         }      
 
-
+        
         bool update()
         {
             bool refresh = false;

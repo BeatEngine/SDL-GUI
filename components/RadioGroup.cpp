@@ -51,6 +51,24 @@ namespace LGUI
         return false;
     }
 
+    void RadioGroup::setEnabled(bool enabled)
+    {
+        for(int i = 0; i < controls.size(); i++)
+        {
+            controls.at(i)->setEnabled(enabled);
+        }
+        setProperties(isHidden(), enabled);
+    }
+
+    void RadioGroup::setHidden(bool hidden)
+    {
+        for(int i = 0; i < controls.size(); i++)
+        {
+            controls.at(i)->setHidden(hidden);
+        }
+        setProperties(hidden, isEnabled());
+    }
+
 
 }
 

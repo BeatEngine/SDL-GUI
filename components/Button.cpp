@@ -17,6 +17,10 @@ namespace LGUI
 
     bool Button::update(Window* window)
     {
+        if(isHidden())
+        {
+            return false;
+        }
         window->setColor(fill);
         SDL_RenderFillRect(window->getRenderer(), &box);
         window->setColor(border);
@@ -35,50 +39,55 @@ namespace LGUI
 
     bool Button::update(Window* window, SDL_Event& event)
     {
-        window->setColor(fill);
-        SDL_RenderFillRect(window->getRenderer(), &box);
-        window->setColor(border);
-        SDL_Rect tmp = box;
-        for(int i = 0; i < borderSize; i++)
+        if(!isHidden())
         {
-            SDL_RenderDrawRect(window->getRenderer(), &tmp);
-            tmp.h-=2;
-            tmp.w-=2;
-            tmp.x++;
-            tmp.y++;
-        }
-        text.update(window);
-
-        if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
-        {
-            if(event.button.x >= box.x && event.button.x <= box.x+box.w)
+            window->setColor(fill);
+            SDL_RenderFillRect(window->getRenderer(), &box);
+            window->setColor(border);
+            SDL_Rect tmp = box;
+            for(int i = 0; i < borderSize; i++)
             {
-                if(event.button.y >= box.y && event.button.y <= box.y+box.h)
+                SDL_RenderDrawRect(window->getRenderer(), &tmp);
+                tmp.h-=2;
+                tmp.w-=2;
+                tmp.x++;
+                tmp.y++;
+            }
+            text.update(window);
+        }
+        if(isEnabled())
+        {
+            if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+            {
+                if(event.button.x >= box.x && event.button.x <= box.x+box.w)
                 {
-                    if(onLeftClick != NULL)
+                    if(event.button.y >= box.y && event.button.y <= box.y+box.h)
                     {
-                        void* arr[2];
-                        arr[0] = window;
-                        arr[1] = this;
-                        ((void ((*)(void**)))(onLeftClick))(arr);
-                        return true;
+                        if(onLeftClick != NULL)
+                        {
+                            void* arr[2];
+                            arr[0] = window;
+                            arr[1] = this;
+                            ((void ((*)(void**)))(onLeftClick))(arr);
+                            return true;
+                        }
                     }
                 }
             }
-        }
-        if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
-        {
-            if(event.button.x >= box.x && event.button.x <= box.x+box.w)
+            if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
             {
-                if(event.button.y >= box.y && event.button.y <= box.y+box.h)
+                if(event.button.x >= box.x && event.button.x <= box.x+box.w)
                 {
-                    if(onRightClick != NULL)
+                    if(event.button.y >= box.y && event.button.y <= box.y+box.h)
                     {
-                        void* arr[2];
-                        arr[0] = window;
-                        arr[1] = this;
-                        ((void ((*)(void**)))(onRightClick))(arr);
-                        return true;
+                        if(onRightClick != NULL)
+                        {
+                            void* arr[2];
+                            arr[0] = window;
+                            arr[1] = this;
+                            ((void ((*)(void**)))(onRightClick))(arr);
+                            return true;
+                        }
                     }
                 }
             }

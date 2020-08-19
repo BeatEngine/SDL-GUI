@@ -38,6 +38,8 @@ class Window;
     class UIComponent
     {
         unsigned int id;
+        bool hidden = false;
+        bool enabled = true;
         public:
 
         virtual bool update(Window* window)
@@ -48,6 +50,32 @@ class Window;
         virtual bool update(Window* window, SDL_Event& event)
         {
             return false;
+        }
+
+        virtual void setHidden(bool hidden)
+        {
+            this->hidden = hidden;
+        }
+
+        virtual void setEnabled(bool enabled)
+        {
+            this->enabled = enabled;
+        }
+
+        void setProperties(bool hidden, bool enabled)
+        {
+            this->hidden = hidden;
+            this->enabled = enabled;
+        }
+
+        bool isHidden()
+        {
+            return hidden;
+        }
+
+        bool isEnabled()
+        {
+            return enabled;
         }
 
         void setId(unsigned int id)

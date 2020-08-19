@@ -19,6 +19,9 @@ class InputBox: public UIComponent
         bool selected = false;
 
         bool shift = false;
+        bool lockShift = false;
+
+        bool lineBreak = false;
 
         std::string textPart = "";
 
@@ -28,11 +31,33 @@ class InputBox: public UIComponent
             setText(tex, renderer);
         }
 
+        void pop(SDL_Renderer* renderer)
+        {
+            std::string tex = getText();
+            if(tex.length() > 0)
+            {
+                tex.pop_back();
+            }
+            setText(tex, renderer);
+        }
+
+        void clear(SDL_Renderer* renderer)
+        {
+            textPart = "";
+            std::string txt("");
+            setText(txt, renderer);
+        }
+
         public:
 
         bool isSelected()
         {
             return selected;
+        }
+
+        void enableLineBreak(bool allowed)
+        {
+            lineBreak = allowed;
         }
 
         InputBox(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
@@ -43,7 +68,7 @@ class InputBox: public UIComponent
 
         void setText(std::string& text, SDL_Renderer* renderer, int fontSize = -1)
         {
-
+            
             while(text.length() > 0 && box.w-getTextSize() < text.length()*getTextSize()/2.150)
             {
                 char tmp[2] = {0};

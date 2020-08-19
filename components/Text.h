@@ -73,7 +73,6 @@ class Text: public UIComponent
                 fontSize = sizePT;
             }
             sizePT = fontSize;
-
             position.w = text.size()*sizePT/2.150;
             position.h = sizePT*5/4;
             TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);

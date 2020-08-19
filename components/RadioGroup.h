@@ -61,6 +61,10 @@ namespace LGUI
 
         bool update(Window* window, SDL_Event& event) override;
 
+        void setEnabled(bool enabled);
+
+        void setHidden(bool hidden);
+
 
 
 
