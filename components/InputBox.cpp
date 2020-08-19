@@ -69,12 +69,29 @@ bool InputBox::update(Window* window)
                 }
             }
         }
+        if(event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_CAPSLOCK)
+        {
+            shift = !shift; 
+        }
         if(event.type == SDL_KEYDOWN && selected)
         {
             //append(event.text.text, window->getRenderer());
             char ptr[2] = {0};
             ptr[0] = event.key.keysym.sym;
-            append(ptr, window->getRenderer());
+            if(event.key.keysym.scancode == SDL_SCANCODE_LSHIFT || event.key.keysym.scancode == SDL_SCANCODE_RSHIFT)
+            {
+                shift = true;
+            }
+            else if(event.key.keysym.scancode != SDL_SCANCODE_CAPSLOCK)
+            {
+                if(shift)
+                {
+                    ptr[0] -= 32;
+                }
+                append(ptr, window->getRenderer());
+            }
+            
+            
             /*if(event.button.x >= box.x && event.button.x <= box.x+box.w)
             {
                 if(event.button.y >= box.y && event.button.y <= box.y+box.h)

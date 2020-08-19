@@ -32,7 +32,7 @@ namespace LGUI
             this->text = "";
             text = "  ";
         }
-        textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
+        textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
         texture = SDL_CreateTextureFromSurface(window->getRenderer(), textSurface);
         TTF_CloseFont(font);
     }

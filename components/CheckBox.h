@@ -1,56 +1,43 @@
+
 namespace LGUI
 {
 
 
-
-class InputBox: public UIComponent
+    class CheckBox: public UIComponent
     {
 
-        SDL_Rect box;
         Text text;
         RGBA fill;
         RGBA border;
 
         int borderSize = 1;
+        SDL_Rect box;
 
         void* onLeftClick;
         void* onRightClick;
 
         bool selected = false;
 
-        bool shift = false;
-
-        std::string textPart = "";
-
-        void append(char* txt, SDL_Renderer* renderer)
-        {
-            std::string tex = getText() + std::string(txt);
-            setText(tex, renderer);
-        }
-
         public:
+
+        CheckBox(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
+
+        bool update(Window* event) override;
+
+        bool update(Window* window, SDL_Event& event) override;
 
         bool isSelected()
         {
             return selected;
         }
 
-        InputBox(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
-
-        bool update(Window* event) override;
-
-        bool update(Window* window, SDL_Event& event) override;
+        void setSelected(bool selected)
+        {
+            this->selected = selected;
+        }
 
         void setText(std::string& text, SDL_Renderer* renderer, int fontSize = -1)
         {
-
-            while(text.length() > 0 && box.w-getTextSize() < text.length()*getTextSize()/2.150)
-            {
-                char tmp[2] = {0};
-                tmp[0] = text.at(0);
-                textPart.append(tmp, 1);
-                text.erase(text.begin());
-            }
             this->text.setText(text, renderer, fontSize);
         }
 
@@ -72,7 +59,7 @@ class InputBox: public UIComponent
 
         std::string getText()
         {
-            return textPart + this->text.getText();
+            return this->text.getText();
         }
 
         void setOnLeftClick(void (*event)(void** parameters))
@@ -88,4 +75,5 @@ class InputBox: public UIComponent
     };
 
 }
+
 

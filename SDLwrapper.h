@@ -106,6 +106,125 @@ class SDL_SW_YUVTexture_Wrapper
         Uint32 src_palette_version;
     };
 
+    class SDL_Color_Wrapper
+    {
+        public:
+
+        SDL_Color_Wrapper()
+        {
+
+        }
+        SDL_Color_Wrapper(SDL_Color_Wrapper* other)
+        {
+            r = other->r;
+            g = other->g;
+            b = other->b;
+            a = other->a;
+        }
+
+        Uint8 r;
+        Uint8 g;
+        Uint8 b;
+        Uint8 a;
+    };
+
+    class SDL_Palette_Wrapper
+    {
+        public:
+        int ncolors;
+        SDL_Color_Wrapper *colors;
+        Uint32 version;
+        int refcount;
+        SDL_Palette_Wrapper()
+        {
+
+        }
+        ~SDL_Palette_Wrapper()
+        {
+            delete colors;
+        }
+        SDL_Palette_Wrapper(SDL_Palette_Wrapper* other)
+        {
+            ncolors = other->ncolors;
+            version = other->version;
+            refcount = other->refcount;
+            colors = new SDL_Color_Wrapper(other->colors);
+        }
+
+        
+    };
+
+    class SDL_PixelFormat_Wrapper
+    {
+        public:
+        SDL_PixelFormat_Wrapper(SDL_PixelFormat_Wrapper* other)
+        {
+            format = other->format;
+            BitsPerPixel = other->BitsPerPixel;
+            BytesPerPixel = other->BytesPerPixel;
+            padding[0] = other->padding[0];
+            padding[1] = other->padding[1];
+            Rmask = other->Rmask;
+            Gmask = other->Gmask;
+            Bmask = other->Bmask;
+            Amask = other->Amask;
+            Rloss = other->Rloss;
+            Gloss = other->Gloss;
+            Bloss = other->Bloss;
+            Aloss = other->Aloss;
+            Rshift = other->Rshift;
+            Gshift = other->Gshift;
+            Bshift = other->Bshift;
+            Ashift = other->Ashift;
+            refcount = other->refcount;
+            if(other->next)
+            {
+                next = new SDL_PixelFormat_Wrapper(other->next);
+            }
+            else
+            {
+                next = 0;
+            }
+            if(other->palette)
+            {
+                palette = new SDL_Palette_Wrapper(other->palette);
+            }
+        }
+        ~SDL_PixelFormat_Wrapper()
+        {
+            SDL_PixelFormat_Wrapper* tmp;
+            while(next != 0)
+            {
+                tmp = next;
+                next = next->next;
+                delete tmp;
+            }
+            if(palette)
+            {
+                delete palette;
+            }
+        }
+        Uint32 format;
+        SDL_Palette_Wrapper *palette;
+        Uint8 BitsPerPixel;
+        Uint8 BytesPerPixel;
+        Uint8 padding[2];
+        Uint32 Rmask;
+        Uint32 Gmask;
+        Uint32 Bmask;
+        Uint32 Amask;
+        Uint8 Rloss;
+        Uint8 Gloss;
+        Uint8 Bloss;
+        Uint8 Aloss;
+        Uint8 Rshift;
+        Uint8 Gshift;
+        Uint8 Bshift;
+        Uint8 Ashift;
+        int refcount;
+        SDL_PixelFormat_Wrapper *next;
+    };
+
     class SDL_Surface_Wrapper
     {
         public:
@@ -119,7 +238,7 @@ class SDL_SW_YUVTexture_Wrapper
             //delete map;
         }
         Uint32 flags;               /**< Read-only */
-        SDL_PixelFormat *format;    /**< Read-only */
+        SDL_PixelFormat_Wrapper *format;    /**< Read-only */
         int w, h;                   /**< Read-only */
         int pitch;                  /**< Read-only */
         void *pixels;               /**< Read-write */
@@ -143,7 +262,8 @@ class SDL_SW_YUVTexture_Wrapper
 
         tx->clip_rect = other->clip_rect;
         tx->flags = 1;
-        tx->format = other->format;
+        
+        tx->format = new SDL_PixelFormat_Wrapper(other->format);
         tx->h = other->h;
         tx->lock_data = other->lock_data;
         tx->locked = other->locked;

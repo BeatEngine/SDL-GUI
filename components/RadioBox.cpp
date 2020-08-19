@@ -2,37 +2,6 @@
 namespace LGUI
 {
 
-    void renderDrawCircle(SDL_Renderer* renderer, int x, int y, int radius, int thickness)
-    {
-        int yy;
-        for(int xx = -radius; xx < radius; xx++)
-        {
-            for(yy = -radius; yy < radius; yy++)
-            {
-                if(sqrtf(xx*xx+yy*yy) <= radius && sqrtf(xx*xx+yy*yy) > radius-thickness)
-                {
-                    SDL_RenderDrawPoint(renderer,x + xx, y + yy);
-                }
-            }
-        }
-    }
-
-    void renderFillCircle(SDL_Renderer* renderer, int x, int y, int radius)
-    {
-        int yy;
-        for(int xx = -radius; xx < radius; xx++)
-        {
-            for(yy = -radius; yy < radius; yy++)
-            {
-                if(sqrtf(xx*xx+yy*yy) <= radius)
-                {
-                    SDL_RenderDrawPoint(renderer,x + xx, y + yy);
-                }
-            }
-        }
-    }
-
-
     RadioBox::RadioBox(int x, int y, int radius, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize = 12)
     {
         onRightClick = NULL;
@@ -54,6 +23,7 @@ namespace LGUI
         if(selected)
         {
             renderFillCircle(window->getRenderer(), x, y, radius/2);
+            renderDrawCircle(window->getRenderer(), x, y, radius/2, radius/2);
         }
         renderDrawCircle(window->getRenderer(), x, y, radius, borderSize);
         text.update(window);
@@ -68,6 +38,7 @@ namespace LGUI
         if(selected)
         {
             renderFillCircle(window->getRenderer(), x, y, radius/2);
+            renderDrawCircle(window->getRenderer(), x, y, radius/2, radius/2);
         }
         renderDrawCircle(window->getRenderer(), x, y, radius, borderSize);
         text.update(window);
@@ -85,8 +56,8 @@ namespace LGUI
                     arr[0] = window;
                     arr[1] = this;
                     ((void ((*)(void**)))(onLeftClick))(arr);
-                    return true;
                 }
+                return true;
             }
         }
         if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_RIGHT)
@@ -100,8 +71,7 @@ namespace LGUI
                     void* arr[2];
                     arr[0] = window;
                     arr[1] = this;
-                    ((void ((*)(void**)))(onRightClick))(arr);
-                    return true;
+                    ((void ((*)(void**)))(onRightClick))(arr);   
                 }
             }
         }

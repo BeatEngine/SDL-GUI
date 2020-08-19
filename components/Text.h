@@ -80,7 +80,7 @@ class Text: public UIComponent
             if(font)
             {
                 SDL_FreeSurface(textSurface);
-                textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
+                textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
                 //SDL_DestroyTexture(texture);
                 texture = SDL_CreateTextureFromSurface(renderer, textSurface);
             }
@@ -101,7 +101,7 @@ class Text: public UIComponent
             if(font)
             {
                 SDL_FreeSurface(textSurface);
-                textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
+                textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
                 //SDL_DestroyTexture(texture);
                 texture = SDL_CreateTextureFromSurface(renderer, textSurface);
                 TTF_CloseFont(font);
@@ -119,7 +119,7 @@ class Text: public UIComponent
             if(font)
             {
                 SDL_FreeSurface(textSurface);
-                textSurface = TTF_RenderText_Shaded(font, text.c_str(), foregroundColor, backgroundColor);
+                textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
                 //SDL_DestroyTexture(texture);
                 texture = SDL_CreateTextureFromSurface(rendere, textSurface);
                 TTF_CloseFont(font);
