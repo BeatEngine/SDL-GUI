@@ -11,4 +11,5 @@
 
 /* Containers ------------------  */
 #include "List.cpp"
+#include "ScrollBox.cpp"
 #include "TabbedContainer.cpp"

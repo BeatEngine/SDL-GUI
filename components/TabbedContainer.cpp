@@ -77,11 +77,8 @@ namespace LGUI
                 break;
             }
             tabs.push_back(tabsNullTerminated[i]);
-            Button* tmp = new Button(1, 1, 60, 20, this->tabs.back()->getName(), RGBA(255, 255, 255, 255), RGBA(0, 0, 0, 255), window, 12);
-            if(buttons.size()>0)
-            {
-                tmp->setPosition(62*buttons.size(), 1, window->getRenderer());
-            }
+            Button* tmp = new Button(0, 1, 60, 20, this->tabs.back()->getName(), RGBA(255, 255, 255, 255), RGBA(0, 0, 0, 255), window, 12);
+            tmp->setPosition(62*buttons.size(), 1, window->getRenderer());
             buttons.push_back(tmp);
             buttons.back()->setParent(this);
             buttons.back()->setId(i);
@@ -140,7 +137,7 @@ namespace LGUI
             buttons.at(i)->setPosition((buttons.at(0)->getRect().w + buttons.at(0)->getBorderSize())*i, y, renderer);
             if(i == 0)
             {
-                buttons.at(i)->setPosition(1, y, renderer);
+                buttons.at(i)->setPosition(0, y, renderer);
             }
         }
     }

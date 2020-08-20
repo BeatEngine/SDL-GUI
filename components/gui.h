@@ -106,5 +106,6 @@ namespace LGUI
 
 /* Containers -------------------  */
 #include "List.h"
+#include "ScrollBox.h"
 #include "TabbedContainer.h"
 

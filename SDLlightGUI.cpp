@@ -117,16 +117,21 @@ int main(int args, char** arg)
     LGUI::Text* element8 = new LGUI::Text("GUI-elements", 14, &window);
 
     LGUI::UIComponent* elements1[] = {element1, element2, element3, element4, NULL};
-    LGUI::List* list1 = new LGUI::List(50, 440, 300, 560, LGUI::RGBA(230, 230, 230, 255), LGUI::RGBA(50, 50, 50, 255), &window, elements1);
+    LGUI::List* list1 = new LGUI::List(0, 0, 300, 560, LGUI::RGBA(230, 230, 230, 255), LGUI::RGBA(50, 50, 50, 255), &window, elements1);
+
+    
 
     list1->push(element5);
     list1->push(element6);
     list1->push(element7);
     list1->push(element8);
 
+    LGUI::UIComponent* elements2[] = {list1, NULL};
+    LGUI::ScrollBox* scroll1 = new LGUI::ScrollBox(50, 440, 300, 400, LGUI::RGBA(255, 255, 255, 0), LGUI::RGBA(0, 0, 0, 255), &window, elements2);
+
     LGUI::UIComponent* components1[] = {button2, button3, NULL};
     LGUI::UIComponent* components2[] = {button4, button5, NULL};
-    LGUI::UIComponent* components3[] = {list1, NULL};
+    LGUI::UIComponent* components3[] = {scroll1, NULL};
 
     LGUI::ContainerTab* tab1 = new LGUI::ContainerTab(std::string("Tab 1"), components1);
     LGUI::ContainerTab* tab2 = new LGUI::ContainerTab(std::string("Tab 2"), components2);

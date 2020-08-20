@@ -6,9 +6,20 @@ namespace LGUI
     {
         if(text.length()>0 && !isHidden())
         {
-            if(SDL_RenderCopy(window->getRenderer(), texture, NULL, &position) != 0)
+            if(rectIsInBorders(position))
             {
-                printf("Text: SDL-Error: %s\n", SDL_GetError());
+                if(SDL_RenderCopy(window->getRenderer(), texture, NULL, &position) != 0)
+                {
+                    printf("Text: SDL-Error: %s\n", SDL_GetError());
+                }
+            }
+            else
+            {
+                SDL_Rect cropped = cropToDrawBorders(position);
+                if(SDL_RenderCopy(window->getRenderer(), texture, &cropped, &position) != 0)
+                {
+                    printf("Text: SDL-Error: %s\n", SDL_GetError());
+                }
             }
         }
         return false;

@@ -1,7 +1,7 @@
 namespace LGUI
 {
 
-    List::List(int x, int y, int width, int hight, RGBA colorFill, RGBA colorBorder, Window* window, UIComponent** elementsListNullTerminated = 0)
+    ScrollBox::ScrollBox(int x, int y, int width, int hight, RGBA colorFill, RGBA colorBorder, Window* window, UIComponent** componentsNullTerminated = 0)
     {
         onRightClick = NULL;
         onLeftClick = NULL;
@@ -11,40 +11,71 @@ namespace LGUI
         box.h = hight;
         fill = colorFill;
         border = colorBorder;
-
-        if(elementsListNullTerminated)
+        if(componentsNullTerminated)
         {
             int i = 0;
-            while (elementsListNullTerminated[i])
+            void* nl = 0;
+            while(componentsNullTerminated[i])
             {
-                elements.push_back(elementsListNullTerminated[i]);
+                components.push_back(componentsNullTerminated[i]);
+                if(componentsNullTerminated[i]->hasPosition())
+                {
+                    relativePositions.push_back(componentsNullTerminated[i]->getPosition());
+                }
+                else
+                {
+                    SDL_Rect tmp;
+                    tmp.h = 0;
+                    tmp.w = 0;
+                    tmp.x = box.x;
+                    tmp.y = box.y;
+                    relativePositions.push_back(tmp);
+                }
                 i++;
             }
-            setElementsPositions();
+            updateRelativePositions();
         }
-        
     }
 
-    bool List::update(Window* window)
+    bool ScrollBox::update(Window* window)
     {
         if(isHidden())
         {
             return false;
         }
         window->setColor(fill);
-        if(rectIsInBorders(box))
-        {
-            SDL_RenderFillRect(window->getRenderer(), &box);
-        }
-        else
-        {
-            SDL_Rect tmprect = cropToDrawBorders(box);
-            SDL_RenderFillRect(window->getRenderer(),&tmprect);
-        }
+        SDL_RenderFillRect(window->getRenderer(), &box);
         window->setColor(border);
         SDL_Rect tmp = box;
-        if(rectIsInBorders(box))
+        for(int i = 0; i < borderSize; i++)
         {
+            SDL_RenderDrawRect(window->getRenderer(), &tmp);
+            tmp.h-=2;
+            tmp.w-=2;
+            tmp.x++;
+            tmp.y++;
+        }
+
+        for(int i = 0; i < components.size(); i++)
+        {
+            if(components.at(i)->hasPosition())
+            {
+                components.at(i)->setDrawBordersRect(box);
+                components.at(i)->update(window);
+            }
+        }
+
+        return false;
+    }
+
+    bool ScrollBox::update(Window* window, SDL_Event& event)
+    {
+        if(!isHidden())
+        {
+            window->setColor(fill);
+            SDL_RenderFillRect(window->getRenderer(), &box);
+            window->setColor(border);
+            SDL_Rect tmp = box;
             for(int i = 0; i < borderSize; i++)
             {
                 SDL_RenderDrawRect(window->getRenderer(), &tmp);
@@ -54,46 +85,16 @@ namespace LGUI
                 tmp.y++;
             }
         }
-        for(int i = 0; i < elements.size(); i++)
+        for(int i = 0; i < components.size(); i++)
         {
-            elements.at(i)->setDrawBordersRect(getDrawBorderRect());
-            elements.at(i)->update(window);
-        }
-        return false;
-    }
-
-    bool List::update(Window* window, SDL_Event& event)
-    {
-        if(!isHidden())
-        {
-            window->setColor(fill);
-            if(rectIsInBorders(box))
+            if(components.at(i)->hasPosition())
             {
-                SDL_RenderFillRect(window->getRenderer(), &box);
-            }
-            else
-            {
-                SDL_Rect tmprect = cropToDrawBorders(box);
-                SDL_RenderFillRect(window->getRenderer(),&tmprect);
-            }
-            window->setColor(border);
-            SDL_Rect tmp = box;
-            if(rectIsInBorders(box))
-            {
-                for(int i = 0; i < borderSize; i++)
+                if(components.at(i)->hasPosition())
                 {
-                    SDL_RenderDrawRect(window->getRenderer(), &tmp);
-                    tmp.h-=2;
-                    tmp.w-=2;
-                    tmp.x++;
-                    tmp.y++;
+                    components.at(i)->setDrawBordersRect(box);
+                    components.at(i)->update(window, event);
                 }
             }
-        }
-        for(int i = 0; i < elements.size(); i++)
-        {
-            elements.at(i)->setDrawBordersRect(getDrawBorderRect());
-            elements.at(i)->update(window, event);
         }
         if(isEnabled())
         {

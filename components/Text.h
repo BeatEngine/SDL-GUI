@@ -32,6 +32,11 @@ class Text: public UIComponent
             update(window);
         }
 
+        bool hasPosition() override
+        {
+            return true;
+        }
+
         void operator = (Text other)
         {
             fontPath = other.fontPath;
@@ -124,13 +129,13 @@ class Text: public UIComponent
             position.y = y - position.h/2;
         }
 
-        void setPosition(int x, int y)
+        void setPosition(int x, int y) override
         {
             position.x = x;
             position.y = y;
         }
 
-        SDL_Rect& getPosition()
+        SDL_Rect& getPosition() override
         {
             return position;
         }

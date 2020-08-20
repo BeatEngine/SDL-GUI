@@ -40,6 +40,8 @@ class Window;
         unsigned int id;
         bool hidden = false;
         bool enabled = true;
+
+        SDL_Rect renderFrameDrawBorder = {0, 0, 9999999, 9999999};
         public:
 
         virtual bool update(Window* window)
@@ -90,7 +92,62 @@ class Window;
 
         virtual void setPosition(int x, int y)
         {
-            
+            return;
+        }
+
+        virtual bool hasPosition()
+        {
+            return false;
+        }
+
+        virtual SDL_Rect& getPosition()
+        {
+            void* p = 0;
+            return (SDL_Rect&)(p);
+        }
+
+        bool rectIsInBorders(SDL_Rect& rect)
+        {
+            if(rect.x >= renderFrameDrawBorder.x && rect.x + rect.w < renderFrameDrawBorder.x + renderFrameDrawBorder.w)
+            {
+                if(rect.y >= renderFrameDrawBorder.y && rect.y + rect.h < renderFrameDrawBorder.y + renderFrameDrawBorder.h)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        SDL_Rect& getDrawBorderRect()
+        {
+            return renderFrameDrawBorder;
+        }
+
+        void setDrawBordersRect(SDL_Rect& maximalRect)
+        {
+            renderFrameDrawBorder = maximalRect;
+        }
+
+        SDL_Rect cropToDrawBorders(SDL_Rect& rect)
+        {
+            SDL_Rect cropped = rect;
+            if(cropped.x < renderFrameDrawBorder.x)
+            {
+                cropped.x = renderFrameDrawBorder.x;
+            }
+            if(cropped.y < renderFrameDrawBorder.y)
+            {
+                cropped.y = renderFrameDrawBorder.y;
+            }
+            if(cropped.w > renderFrameDrawBorder.w)
+            {
+                cropped.w = renderFrameDrawBorder.w;
+            }
+            if(cropped.h > renderFrameDrawBorder.h)
+            {
+                cropped.h = renderFrameDrawBorder.h;
+            }
+            return cropped;
         }
 
     };
