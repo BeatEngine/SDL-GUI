@@ -9,6 +9,9 @@ namespace LGUI
         RGBA fill;
         RGBA border;
 
+        ScrollBar* verticalBar;
+        ScrollBar* horizontalBar;
+
         int borderSize = 1;
 
         bool selected = false;
@@ -18,6 +21,9 @@ namespace LGUI
 
         float scrollX = 0;
         float scrollY = 0;
+
+        int lastX = 0;
+        int lastY = 0;
 
         std::vector<UIComponent*> components;
         std::vector<SDL_Rect> relativePositions;
@@ -29,6 +35,21 @@ namespace LGUI
             {
                 components.at(i)->setPosition(box.x + relativePositions.at(i).x - box.w * scrollX, box.y + relativePositions.at(i).y - box.h * scrollY);
             }
+            int maxX = 1;
+            int maxY = 1;
+            for(int i = 0; i < relativePositions.size(); i++)
+            {
+                if(relativePositions.at(i).x + relativePositions.at(i).w > maxX)
+                {
+                    maxX = relativePositions.at(i).x + relativePositions.at(i).w;
+                }
+                if(relativePositions.at(i).y + relativePositions.at(i).h > maxY)
+                {
+                    maxY = relativePositions.at(i).y + relativePositions.at(i).h;
+                }
+            }
+            verticalBar->setVerticalDisplayQuote(box.h / (float)maxY);
+            horizontalBar->setVerticalDisplayQuote(box.w / (float)maxX);
         }
 
         public:
@@ -41,6 +62,13 @@ namespace LGUI
         ScrollBox(ScrollBox& other)
         {
 
+        }
+
+        ~ScrollBox()
+        {
+            delete verticalBar;
+            delete horizontalBar;
+            relativePositions.clear();
         }
 
         ScrollBox(int x, int y, int width, int hight, RGBA colorFill, RGBA colorBorder, Window* window, UIComponent** componentsNullTerminated);
@@ -116,6 +144,17 @@ namespace LGUI
             scrollX = sx;
             scrollY = sy;
             updateRelativePositions();
+        }
+
+        float getScrollX()
+        {
+            return scrollX;
+        }
+
+
+        float getScrollY()
+        {
+            return scrollY;
         }
 
         unsigned int getBorderSize()

@@ -101,6 +101,7 @@ namespace LGUI
 #include "RadioBox.h"
 #include "RadioGroup.h"
 #include "CheckBox.h"
+#include "ScrollBar.h"
 
 
 

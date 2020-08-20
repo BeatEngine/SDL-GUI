@@ -11,6 +11,12 @@ namespace LGUI
         box.h = hight;
         fill = colorFill;
         border = colorBorder;
+        verticalBar = new LGUI::ScrollBar(x + width - 15, y+1, 14, hight-2, fill, border, window, true);
+        horizontalBar = new LGUI::ScrollBar(x + 1, y + hight - 15, width-16, 14, fill, border, window, false);
+
+        verticalBar->setParent(this);
+        horizontalBar->setParent(this);
+
         if(componentsNullTerminated)
         {
             int i = 0;
@@ -65,6 +71,9 @@ namespace LGUI
             }
         }
 
+        horizontalBar->update(window);
+            verticalBar->update(window);
+
         return false;
     }
 
@@ -96,17 +105,42 @@ namespace LGUI
                 }
             }
         }
+        if(!isHidden())
+        {
+            horizontalBar->update(window, event);
+            verticalBar->update(window, event);
+        }
         if(isEnabled())
         {
+            if(event.type == SDL_MOUSEMOTION)
+            {
+                lastX = event.motion.x;
+                lastY = event.motion.y;
+            }
             if(event.type == SDL_MOUSEWHEEL)
             {
-                if(event.wheel.y < 0 && scrollY < 1)
+                if(lastX >= box.x && lastX <= box.x+box.w)
                 {
-                    setScroll(scrollX, scrollY + (-event.wheel.y*3)/100.0f);
-                }
-                else if(scrollY > 0)
-                {
-                    setScroll(scrollX, scrollY - event.wheel.y*3/100.0f);
+                    if(lastY >= box.y && lastY <= box.y+box.h)
+                    {
+
+                        if(event.wheel.y < 0 && scrollY < 1)
+                        {
+                            setScroll(scrollX, scrollY + (-event.wheel.y*3)/100.0f);
+                        }
+                        else if(scrollY > 0)
+                        {
+                            setScroll(scrollX, scrollY - event.wheel.y*3/100.0f);
+                        }
+                        if(event.wheel.x > 0 && scrollX < 1)
+                        {
+                            setScroll(scrollX + event.wheel.x*3/100.0f, scrollY);
+                        }
+                        else if(scrollX > 0)
+                        {
+                            setScroll(scrollX + event.wheel.x*3/100.0f, scrollY);
+                        }
+                    }
                 }
             }
             if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)

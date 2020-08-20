@@ -3,7 +3,7 @@ namespace LGUI
 {
 
 
-class Button: public UIComponent
+    class Button: public UIComponent
     {
 
         SDL_Rect box;
@@ -65,6 +65,13 @@ class Button: public UIComponent
             box.x = x;
             box.y = y;
             text.setPositionCenter(x + box.w/2, y + box.h/2);
+        }
+
+        void setSize(int width, int hight)
+        {
+            box.w = width;
+            box.h = hight;
+            text.setPositionCenter(box.x + box.w/2, box.y + box.h/2);
         }
 
         unsigned int getBorderSize()
