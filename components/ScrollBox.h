@@ -97,6 +97,22 @@ namespace LGUI
 
         void setScroll(float sx, float sy)
         {
+            if(sx < 0)
+            {
+                sx = 0;
+            }
+            if(sx > 1)
+            {
+                sx = 1;
+            }
+            if(sy < 0)
+            {
+                sy = 0;
+            }
+            if(sy > 1)
+            {
+                sy = 1;
+            }
             scrollX = sx;
             scrollY = sy;
             updateRelativePositions();

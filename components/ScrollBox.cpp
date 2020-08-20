@@ -98,6 +98,17 @@ namespace LGUI
         }
         if(isEnabled())
         {
+            if(event.type == SDL_MOUSEWHEEL)
+            {
+                if(event.wheel.y < 0 && scrollY < 1)
+                {
+                    setScroll(scrollX, scrollY + (-event.wheel.y*3)/100.0f);
+                }
+                else if(scrollY > 0)
+                {
+                    setScroll(scrollX, scrollY - event.wheel.y*3/100.0f);
+                }
+            }
             if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
             {
                 if(event.button.x >= box.x && event.button.x <= box.x+box.w)

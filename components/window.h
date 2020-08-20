@@ -9,6 +9,7 @@ namespace LGUI
         SDL_Event event;
         std::vector<UIComponent*> components;
         unsigned long framedelay;
+        clock_t startedAt;
         public:
 
 
@@ -38,6 +39,7 @@ namespace LGUI
             setColor(255, 255, 255, 255);
             clearBackground();
             updateScreen();
+            startedAt = clock();
         }
 
 
@@ -138,7 +140,11 @@ namespace LGUI
         {
             //SDL_UpdateWindowSurface(window);
             SDL_RenderPresent(renderer);
-            usleep(framedelay);
+            if(clock() - startedAt < framedelay)
+            {
+                usleep(framedelay - (clock() - startedAt));
+            }
+            startedAt = clock();
         }      
 
         
