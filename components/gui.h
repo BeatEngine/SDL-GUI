@@ -105,5 +105,6 @@ namespace LGUI
 
 
 /* Containers -------------------  */
+#include "List.h"
 #include "TabbedContainer.h"
 

@@ -90,6 +90,9 @@ namespace LGUI
         std::vector<Button*> buttons;
         unsigned int selected = 0;
 
+        RGBA selectedButtonBackground;
+        RGBA buttonBackground;
+
         void init()
         {
             for(int i = 0; i < tabs.size(); i++)
@@ -98,13 +101,29 @@ namespace LGUI
                 {
                     tabs.at(i)->setHidden(true);
                     tabs.at(i)->setEnabled(false);
+                    buttons.at(i)->setBackground(buttonBackground);
+                    buttons.at(i)->setBorder(RGBA(100,100,100,255), 2);
                 }
                 else
                 {
                     tabs.at(i)->setEnabled(true);
                     tabs.at(i)->setHidden(false);
+                    buttons.at(i)->setBackground(selectedButtonBackground);
+                    buttons.at(i)->setBorder(RGBA(0,0,0,255), 2);
                 }
             }
+        }
+
+        void setDefaults()
+        {
+            selectedButtonBackground.r = 200;
+            selectedButtonBackground.g = 200;
+            selectedButtonBackground.b = 200;
+            selectedButtonBackground.a = 255;
+            buttonBackground.r = 150;
+            buttonBackground.g = 150;
+            buttonBackground.b = 150;
+            buttonBackground.a = 255;
         }
 
         public:
@@ -119,7 +138,7 @@ namespace LGUI
 
         TabbedContainer()
         {
-
+            setDefaults();
         }
 
         TabbedContainer(Window* window, int tabs , ContainerTab*...);
@@ -145,11 +164,33 @@ namespace LGUI
                 tabs.at(selected)->setEnabled(false);
                 tabs.at(selected)->setHidden(true);
                 tabs.at(selected)->setSelected(false);
+                buttons.at(selected)->setBackground(buttonBackground);
+                buttons.at(selected)->setBorder(RGBA(100,100,100,255), 2);
                 selected = pos;
+                buttons.at(selected)->setBackground(selectedButtonBackground);
+                buttons.at(selected)->setBorder(RGBA(0,0,0,255), 2);
                 tabs.at(selected)->setSelected(true);
                 tabs.at(selected)->setEnabled(true);
                 tabs.at(selected)->setHidden(false);
             }
+        }
+
+        void setTabButtonBackround(RGBA color)
+        {
+            buttonBackground = color;
+            for(int i = 0; i < buttons.size(); i++)
+            {
+                if(i != selected)
+                {
+                    buttons.at(i)->setBackground(buttonBackground);
+                }  
+            }
+        }
+
+        void setTabButtonSelectedBackground(RGBA color)
+        {
+            selectedButtonBackground = color;
+            buttons.at(selected)->setBackground(color);
         }
 
         bool update(Window* window) override;

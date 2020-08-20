@@ -106,12 +106,32 @@ int main(int args, char** arg)
     LGUI::Button* button4 = new LGUI::Button(50, 440, 100, 20, std::string("Button in tab 2"), LGUI::RGBA(200,255,200,255), LGUI::RGBA(0,0,100,255), &window);
     LGUI::Button* button5 = new LGUI::Button(200, 440, 100, 20, std::string("2. Button in tab 2"), LGUI::RGBA(200,255,200,255), LGUI::RGBA(0,0,100,255), &window);
 
+
+    LGUI::Text* element1 = new LGUI::Text("This", 14, &window);
+    LGUI::Text* element2 = new LGUI::Text("is", 14, &window);
+    LGUI::Text* element3 = new LGUI::Text("a", 14, &window);
+    LGUI::Text* element4 = new LGUI::Text("list", 14, &window);
+    LGUI::Text* element5 = new LGUI::Text("to", 14, &window);
+    LGUI::Text* element6 = new LGUI::Text("demonstrate", 14, &window);
+    LGUI::Text* element7 = new LGUI::Text("the", 14, &window);
+    LGUI::Text* element8 = new LGUI::Text("GUI-elements", 14, &window);
+
+    LGUI::UIComponent* elements1[] = {element1, element2, element3, element4, NULL};
+    LGUI::List* list1 = new LGUI::List(50, 440, 300, 560, LGUI::RGBA(230, 230, 230, 255), LGUI::RGBA(50, 50, 50, 255), &window, elements1);
+
+    list1->push(element5);
+    list1->push(element6);
+    list1->push(element7);
+    list1->push(element8);
+
     LGUI::UIComponent* components1[] = {button2, button3, NULL};
     LGUI::UIComponent* components2[] = {button4, button5, NULL};
+    LGUI::UIComponent* components3[] = {list1, NULL};
 
     LGUI::ContainerTab* tab1 = new LGUI::ContainerTab(std::string("Tab 1"), components1);
     LGUI::ContainerTab* tab2 = new LGUI::ContainerTab(std::string("Tab 2"), components2);
-    LGUI::ContainerTab* tabs[] = {tab1, tab2, NULL};
+    LGUI::ContainerTab* tab3 = new LGUI::ContainerTab(std::string("Tab 3"), components3);
+    LGUI::ContainerTab* tabs[] = {tab1, tab2, tab3, NULL};
     LGUI::TabbedContainer* container = new LGUI::TabbedContainer(&window,tabs);
 
     container->setPosition(0, 400, &window);

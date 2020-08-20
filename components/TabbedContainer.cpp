@@ -63,6 +63,7 @@ namespace LGUI
             buttons.back()->setOnLeftClick(LGUI::TabbedContainer::_setTabbedContainerSelected);
         }
         va_end(argumente);
+        setDefaults();
         init();
     }
 
@@ -79,7 +80,7 @@ namespace LGUI
             Button* tmp = new Button(1, 1, 60, 20, this->tabs.back()->getName(), RGBA(255, 255, 255, 255), RGBA(0, 0, 0, 255), window, 12);
             if(buttons.size()>0)
             {
-                tmp->setPosition(65*buttons.size(), 1, window->getRenderer());
+                tmp->setPosition(62*buttons.size(), 1, window->getRenderer());
             }
             buttons.push_back(tmp);
             buttons.back()->setParent(this);
@@ -87,6 +88,7 @@ namespace LGUI
             buttons.back()->setOnLeftClick(LGUI::TabbedContainer::_setTabbedContainerSelected);
             i++;
         }
+        setDefaults();
         init();
     }
 
@@ -135,7 +137,7 @@ namespace LGUI
         SDL_Renderer* renderer = window->getRenderer();
         for(int i = 0; i < buttons.size(); i++)
         {
-            buttons.at(i)->setPosition((buttons.at(0)->getRect().w + 5)*i, y, renderer);
+            buttons.at(i)->setPosition((buttons.at(0)->getRect().w + buttons.at(0)->getBorderSize())*i, y, renderer);
             if(i == 0)
             {
                 buttons.at(i)->setPosition(1, y, renderer);

@@ -3,51 +3,74 @@ namespace LGUI
 {
 
 
-class Button: public UIComponent
+    class List: public UIComponent
     {
-
         SDL_Rect box;
-        Text text;
         RGBA fill;
         RGBA border;
-
         int borderSize = 1;
-
         void* onLeftClick;
         void* onRightClick;
         UIComponent* optionalParent;
+
+
+        std::vector<UIComponent*> elements;
+
+
+        void setElementsPositions()
+        {
+
+            int midX = box.x + 5;
+            int midY = box.h/(1+elements.size());
+
+            for(int i = 0; i < elements.size(); i++)
+            {
+                elements.at(i)->setPosition(midX, midY*(i+1) + box.y);
+            }
+
+
+        }
+
         public:
 
-        Button(Button* other)
+        List(List* other)
         {
 
         }
 
-        Button(Button& other)
+        List(List& other)
         {
 
         }
 
-        Button(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
+        List(int x, int y, int width, int hight, RGBA colorFill, RGBA colorBorder, Window* window, UIComponent** elementsListNullTerminated);
+
+        void push(UIComponent* element)
+        {
+            elements.push_back(element);
+            setElementsPositions();
+        }
+
+        void pop()
+        {
+            elements.pop_back();
+            setElementsPositions();
+        }
+
+        void remove(unsigned int position)
+        {
+            elements.erase(elements.begin() + position);
+            setElementsPositions();
+        }
+
+        UIComponent* at(unsigned int position)
+        {
+            return elements.at(position);
+        }
 
         bool update(Window* event) override;
 
         bool update(Window* window, SDL_Event& event) override;
-
-        void setText(std::string& text, SDL_Renderer* renderer, int fontSize = -1)
-        {
-            this->text.setText(text, renderer, fontSize);
-        }
-
-        int getTextSize()
-        {
-            return text.getFontSize();
-        }
-
-        void setTextColor(RGBA color, int fontSize, SDL_Renderer* renderer)
-        {
-            text.setColor(color, fontSize, renderer);
-        }
 
         void setBackground(RGBA color)
         {
@@ -64,7 +87,6 @@ class Button: public UIComponent
         {
             box.x = x;
             box.y = y;
-            text.setPositionCenter(x + box.w/2, y + box.h/2);
         }
 
         unsigned int getBorderSize()
@@ -75,11 +97,6 @@ class Button: public UIComponent
         SDL_Rect& getRect()
         {
             return box;
-        }
-
-        std::string getText()
-        {
-            return this->text.getText();
         }
 
         void setOnLeftClick(void (*event)(void** parameters))

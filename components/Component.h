@@ -88,6 +88,11 @@ class Window;
             return id;
         }
 
+        virtual void setPosition(int x, int y)
+        {
+            
+        }
+
     };
 }
 

@@ -14,6 +14,31 @@ namespace LGUI
         return false;
     }
 
+    Text::Text(std::string text, int textSize, Window* window)
+    {
+        
+        foregroundColor = { 0, 0, 0, 255};
+        backgroundColor = { 255, 255, 255, 0};
+        fontPath = "Arial.ttf";
+        this->text = text;
+        sizePT = textSize;
+        position.h = 20;
+        position.w = 100;
+        position.x = 50;
+        position.y = 50;
+        TTF_Font* font = TTF_OpenFont(fontPath.c_str(), textSize);
+        if(text.length() < 1)
+        {
+            this->text = "";
+            text = "  ";
+        }
+        TTF_SizeText(font, text.c_str(), &position.w, &position.h);
+        setPosition(position.x, position.y);
+        textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
+        texture = SDL_CreateTextureFromSurface(window->getRenderer(), textSurface);
+        TTF_CloseFont(font);
+    }
+
     Text::Text(std::string fontFilePath ,int textSize, std::string text, int x, int y, int w, int h, Window* window)
     {
         

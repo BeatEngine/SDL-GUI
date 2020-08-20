@@ -23,7 +23,14 @@ class Text: public UIComponent
         }
         Text(std::string fontFilePath ,int textSize, std::string text, int x, int y, int w, int h, Window* window);
 
+        Text(std::string text, int textSize, Window* window);
+
         bool update(Window* window);
+
+        bool update(Window* window, SDL_Event& event)
+        {
+            update(window);
+        }
 
         void operator = (Text other)
         {
