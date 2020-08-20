@@ -33,5 +33,13 @@ cd ..
 
 g++ SDLlightGUI.cpp -oSDLlightGUI
 
-
+<html>
+  <h2>Features</h2>
+  <h3>Button</h3>
+  <h3>InputBox</h3>
+  <h3>RadioBox</h3>
+  <h3>CheckBox</h3>
+  <h3>TabbedContainer</h3>
+  <h3>List</h3>
+</html>
 
