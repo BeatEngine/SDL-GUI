@@ -1,7 +1,7 @@
 
 namespace LGUI
 {
-
+    class ScrollBox;
 
     class ScrollBar: public UIComponent
     {
@@ -16,38 +16,25 @@ namespace LGUI
         void* onLeftClick;
         void* onRightClick;
 
-        UIComponent* optionalParent;
+        UIComponent* optionalParent = 0;
+
+        int lastX = -1;
+        int lastY = -1;
+
+        float lastDisplayQuoteV = 1;
+        float lastDisplayQuoteH = 1;
 
         bool vertical = true;
         public:
 
 
-        static void _scrollParentOnClick(void** params)
+        static void _scrollParentOnClick(void** params);
+
+        void scrollOnClick(SDL_Event& event, LGUI::ScrollBox* scroll);
+
+        void scrollParentOnClick(SDL_Event& event)
         {
-            LGUI::ScrollBar* scrollBar = (LGUI::ScrollBar*)params[1];
-            LGUI::Window* window = (LGUI::Window*)params[0];
-
-            SDL_Event* event = (SDL_Event*)params[2];
-
-            //LGUI::ScrollBox* scroll = (LGUI::ScrollBox*)(scrollBar->getParentWhenSet());
-        /*
-            if(event->motion.y < 0 && scroll->getScrollY() < 1)
-            {
-                scroll->setScroll(scroll->getScrollX(), scroll->getScrollY() + (-event->motion.y*3)/100.0f);
-            }
-            else if(scroll->getScrollY() > 0)
-            {
-                scroll->setScroll(scroll->getScrollX(), scroll->getScrollY() - event->motion.y*3/100.0f);
-            }
-            if(event->motion.x > 0 && scroll->getScrollX() < 1)
-            {
-                scroll->setScroll(scroll->getScrollX() + event->motion.x*3/100.0f, scroll->getScrollY());
-            }
-            else if(scroll->getScrollX() > 0)
-            {
-                scroll->setScroll(scroll->getScrollX() + event->motion.x*3/100.0f, scroll->getScrollY());
-            }*/
-
+            setLastCursor(event.button.x, event.button.y);
         }
 
         ScrollBar()
@@ -71,7 +58,6 @@ namespace LGUI
 
         bool update(Window* window, SDL_Event& event) override;
 
-
         void setBackground(RGBA color)
         {
             fill = color;
@@ -89,6 +75,22 @@ namespace LGUI
             box.y = y;
         }
 
+        void setLastCursor(int x, int y)
+        {
+            lastX = x;
+            lastY = y;
+        }
+
+        int getLastX()
+        {
+            return lastX;
+        }
+
+        int getLastY()
+        {
+            return lastY;
+        }
+
         unsigned int getBorderSize()
         {
             return borderSize;
@@ -99,20 +101,33 @@ namespace LGUI
             return box;
         }
 
-        void setHorizontalDisplayQuote(float quote)
+        void setHorizontalDisplayQuote(float quote, float scrollX)
         {
             if(!vertical)
             {
+                lastDisplayQuoteH = quote;
                 button->setSize((box.w-2)*quote, button->getRect().h);
+                button->setPosition(box.x + (1-scrollX)*(box.w-button->getRect().w), button->getRect().y);
             }
         }
 
-        void setVerticalDisplayQuote(float quote)
+        void setVerticalDisplayQuote(float quote, float scrollY)
         {
             if(vertical)
             {
+                lastDisplayQuoteV = quote;
                 button->setSize(button->getRect().w, (box.h-2)*quote);
+                button->setPosition(button->getRect().x, box.y + scrollY*(box.h-button->getRect().h));
             }
+        }
+
+        float getDisplayQuote()
+        {
+            if(vertical)
+            {
+                return lastDisplayQuoteV;
+            }
+            return lastDisplayQuoteH;
         }
 
         void setOnLeftClick(void (*event)(void** parameters))
@@ -134,6 +149,8 @@ namespace LGUI
         {
             optionalParent = parent;
         }
+
+        
 
     };
 

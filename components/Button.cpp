@@ -66,9 +66,10 @@ namespace LGUI
                     {
                         if(onLeftClick != NULL)
                         {
-                            void* arr[2];
+                            void* arr[3];
                             arr[0] = window;
                             arr[1] = this;
+                            arr[2] = &event;
                             ((void ((*)(void**)))(onLeftClick))(arr);
                             return true;
                         }

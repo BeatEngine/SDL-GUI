@@ -60,7 +60,7 @@ namespace LGUI
             borderSize = size;
         }
 
-        void setPosition(int x, int y, SDL_Renderer* renderer)
+        void setPosition(int x, int y)
         {
             box.x = x;
             box.y = y;
@@ -107,6 +107,16 @@ namespace LGUI
         void setParent(UIComponent* parent)
         {
             optionalParent = parent;
+        }
+
+        void* getOnLeftClick()
+        {
+            return onLeftClick;
+        }
+
+        void* getOnRightClick()
+        {
+            return onRightClick;
         }
 
     };

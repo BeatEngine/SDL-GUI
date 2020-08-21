@@ -127,7 +127,7 @@ int main(int args, char** arg)
     list1->push(element8);
 
     LGUI::UIComponent* elements2[] = {list1, NULL};
-    LGUI::ScrollBox* scroll1 = new LGUI::ScrollBox(50, 440, 300, 400, LGUI::RGBA(255, 255, 255, 0), LGUI::RGBA(0, 0, 0, 255), &window, elements2);
+    LGUI::ScrollBox* scroll1 = new LGUI::ScrollBox(50, 440, 200, 400, LGUI::RGBA(255, 255, 255, 0), LGUI::RGBA(0, 0, 0, 255), &window, elements2);
 
     LGUI::UIComponent* components1[] = {button2, button3, NULL};
     LGUI::UIComponent* components2[] = {button4, button5, NULL};

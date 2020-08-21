@@ -51,16 +51,7 @@ namespace LGUI
         }
         window->setColor(fill);
         SDL_RenderFillRect(window->getRenderer(), &box);
-        window->setColor(border);
-        SDL_Rect tmp = box;
-        for(int i = 0; i < borderSize; i++)
-        {
-            SDL_RenderDrawRect(window->getRenderer(), &tmp);
-            tmp.h-=2;
-            tmp.w-=2;
-            tmp.x++;
-            tmp.y++;
-        }
+        
 
         for(int i = 0; i < components.size(); i++)
         {
@@ -71,8 +62,34 @@ namespace LGUI
             }
         }
 
-        horizontalBar->update(window);
+        if(conditionalShowBars)
+        {
+            if(horizontalBar->getDisplayQuote()<1)
+            {
+                horizontalBar->update(window);
+            }
+            if(verticalBar->getDisplayQuote()<1)
+            {
+                verticalBar->update(window);
+            }
+        }
+        else
+        {
+            horizontalBar->update(window);
             verticalBar->update(window);
+        }
+        window->setColor(border);
+        SDL_Rect tmp = box;
+        for(int i = 0; i < borderSize; i++)
+        {
+            SDL_RenderDrawRect(window->getRenderer(), &tmp);
+            tmp.h-=2;
+            tmp.w-=2;
+            tmp.x++;
+            tmp.y++;
+        }
+        
+        
 
         return false;
     }
@@ -83,16 +100,6 @@ namespace LGUI
         {
             window->setColor(fill);
             SDL_RenderFillRect(window->getRenderer(), &box);
-            window->setColor(border);
-            SDL_Rect tmp = box;
-            for(int i = 0; i < borderSize; i++)
-            {
-                SDL_RenderDrawRect(window->getRenderer(), &tmp);
-                tmp.h-=2;
-                tmp.w-=2;
-                tmp.x++;
-                tmp.y++;
-            }
         }
         for(int i = 0; i < components.size(); i++)
         {
@@ -107,8 +114,32 @@ namespace LGUI
         }
         if(!isHidden())
         {
-            horizontalBar->update(window, event);
-            verticalBar->update(window, event);
+            if(conditionalShowBars)
+            {
+                if(horizontalBar->getDisplayQuote()<1)
+                {
+                    horizontalBar->update(window, event);
+                }
+                if(verticalBar->getDisplayQuote()<1)
+                {
+                    verticalBar->update(window, event);
+                }
+            }
+            else
+            {
+                horizontalBar->update(window, event);
+                verticalBar->update(window, event);
+            }
+            window->setColor(border);
+            SDL_Rect tmp = box;
+            for(int i = 0; i < borderSize; i++)
+            {
+                SDL_RenderDrawRect(window->getRenderer(), &tmp);
+                tmp.h-=2;
+                tmp.w-=2;
+                tmp.x++;
+                tmp.y++;
+            }
         }
         if(isEnabled())
         {

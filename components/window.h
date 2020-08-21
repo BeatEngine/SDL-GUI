@@ -138,7 +138,7 @@ namespace LGUI
 
         void updateScreen()
         {
-            //SDL_UpdateWindowSurface(window);
+            SDL_UpdateWindowSurface(window);
             SDL_RenderPresent(renderer);
             if(clock() - startedAt < framedelay)
             {
@@ -186,7 +186,7 @@ namespace LGUI
 
             if(refresh)
             {
-                updateScreen();
+                //updateScreen();
             }
             //usleep(framedelay);
             return true;
