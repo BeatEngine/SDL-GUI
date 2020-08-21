@@ -42,31 +42,6 @@ namespace LGUI
         setProperties(hidden, isEnabled());
     }
 
-    TabbedContainer::TabbedContainer(Window* window, int tabs , ContainerTab*...)
-    {
-        va_list argumente;
-        int i;
-        double summe = 0;
-
-        va_start(argumente, tabs);
-        for (i = 0; i < tabs; i++)
-        {
-            this->tabs.push_back(va_arg(argumente, ContainerTab*));
-            Button* tmp = new Button(1, 1, 60, 20, this->tabs.back()->getName(), RGBA(255, 255, 255, 255), RGBA(0, 0, 0, 255), window, 12);
-            if(buttons.size()>0)
-            {
-                tmp->setPosition(65*buttons.size(), 1);
-            }
-            buttons.push_back(tmp);
-            buttons.back()->setParent(this);
-            buttons.back()->setId(i);
-            buttons.back()->setOnLeftClick(LGUI::TabbedContainer::_setTabbedContainerSelected);
-        }
-        va_end(argumente);
-        setDefaults();
-        init();
-    }
-
     TabbedContainer::TabbedContainer(Window* window, ContainerTab* tabsNullTerminated[])
     {
         int i = 0;

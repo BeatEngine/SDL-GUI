@@ -91,7 +91,8 @@ class Text: public UIComponent
             
             if(font)
             {
-                SDL_FreeSurface(textSurface);
+                //SDL_FreeSurface(textSurface);
+                ((SDL_Surface_Wrapper*)textSurface)->~SDL_Surface_Wrapper();
                 TTF_SizeText(font, text.c_str(), &position.w, &position.h);
                 textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
                 //SDL_DestroyTexture(texture);
@@ -113,7 +114,8 @@ class Text: public UIComponent
             TTF_Font* font = TTF_OpenFont(fontPath.c_str(), sizePT);
             if(font)
             {
-                SDL_FreeSurface(textSurface);
+                //SDL_FreeSurface(textSurface);
+                ((SDL_Surface_Wrapper*)(textSurface))->~SDL_Surface_Wrapper();
                 TTF_SizeText(font, text.c_str(), &position.w, &position.h);
                 textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
                 //SDL_DestroyTexture(texture);

@@ -102,8 +102,7 @@ class Window;
 
         virtual SDL_Rect& getPosition()
         {
-            void* p = 0;
-            return (SDL_Rect&)(p);
+            return *(new SDL_Rect);
         }
 
         bool rectIsInBorders(SDL_Rect& rect)

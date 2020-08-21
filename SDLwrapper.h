@@ -137,11 +137,14 @@ class SDL_SW_YUVTexture_Wrapper
         int refcount;
         SDL_Palette_Wrapper()
         {
-
+            colors = 0;
         }
         ~SDL_Palette_Wrapper()
         {
-            delete colors;
+            if(colors)
+            {
+                delete colors;
+            }
         }
         SDL_Palette_Wrapper(SDL_Palette_Wrapper* other)
         {
@@ -230,12 +233,21 @@ class SDL_SW_YUVTexture_Wrapper
         public:
         SDL_Surface_Wrapper()
         {
-
+            pixels = 0;
+            map = 0;
         }
         ~SDL_Surface_Wrapper()
         {
-            //free(pixels);
-            //delete map;
+            if(pixels)
+            {
+                //free(pixels);
+                //pixels = 0;
+            }
+            if(map)
+            {
+                //delete map;
+                //map = 0;
+            }
         }
         Uint32 flags;               /**< Read-only */
         SDL_PixelFormat_Wrapper *format;    /**< Read-only */
@@ -265,6 +277,7 @@ class SDL_SW_YUVTexture_Wrapper
         
         tx->format = new SDL_PixelFormat_Wrapper(other->format);
         tx->h = other->h;
+        tx->w = other->w;
         tx->lock_data = other->lock_data;
         tx->locked = other->locked;
         tx->pitch = other->pitch;
