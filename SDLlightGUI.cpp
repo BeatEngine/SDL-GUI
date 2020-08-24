@@ -1,4 +1,3 @@
-#include <stdio.h>
 
 #include "SDLLightGUI.h"
 
@@ -63,7 +62,10 @@ void checkBoxOnClick(void** parameters)
     }
 }
 
-
+void contextOnExit(void** parametes)
+{
+    exit(0);
+}
 
 int main(int args, char** arg)
 {
@@ -85,6 +87,7 @@ int main(int args, char** arg)
     radioGroup->setHidden(true);
 
     LGUI::CheckBox* check1 = new LGUI::CheckBox(40, 120, 14, 14, std::string("Enable and show radio control"), LGUI::RGBA(200,200,200,255),LGUI::RGBA(100,100,100,255), &window);
+
 
     window.addComponent(button1);
     window.addComponent(input1);
@@ -141,7 +144,22 @@ int main(int args, char** arg)
 
     container->setPosition(0, 400, &window);
 
+    LGUI::UIComponent* contlist[] = {container, NULL};
+
+    LGUI::ScrollBox* content = new LGUI::ScrollBox(0, 0, 1000, 1000, LGUI::RGBA(255,255,255,0),LGUI::RGBA(0, 0, 0, 255), &window, contlist);
+
+    LGUI::MenuList* menuContext = new LGUI::MenuList(0, 0, 70, 200, LGUI::RGBA(220, 220, 220, 255), LGUI::RGBA(0, 0, 0, 255), &window);
+
+    menuContext->addEntrie("Exit", &window, contextOnExit);
+    menuContext->addEntrie("Brexit", &window, contextOnExit);
+    menuContext->addEntrie("Lexit", &window, contextOnExit);
+    menuContext->addEntrie("Nexit", &window, contextOnExit);
+
+    LGUI::ContextMenu* contextMenu = new LGUI::ContextMenu(0, 0, 9999, 9999, menuContext, &window);
+
     window.addComponent(container);
+
+    window.addComponent(contextMenu);
     while (window.update()) //window main loop
     {
         window.updateScreen();

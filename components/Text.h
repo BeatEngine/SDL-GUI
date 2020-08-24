@@ -21,6 +21,24 @@ class Text: public UIComponent
             textSurface = 0;
             sizePT = 12;
         }
+
+        Text(Text* other)
+        {
+            *this = *other;
+        }
+
+        Text(const Text& other)
+        {
+            *this = other;
+            /*fontPath = other.fontPath;
+            text = other.text;
+            foregroundColor = other.foregroundColor;
+            backgroundColor = other.backgroundColor;
+            position = other.position;
+            sizePT = other.sizePT;
+            textSurface = SDL_CreateRGBSurfaceWithFormatFrom(other.textSurface->pixels, other.textSurface->w, other.textSurface->h, other.textSurface->format->BytesPerPixel*8, other.textSurface->format->BytesPerPixel*other.textSurface->w, other.textSurface->format->format);*/
+        }
+
         Text(std::string fontFilePath ,int textSize, std::string text, int x, int y, int w, int h, Window* window);
 
         Text(std::string text, int textSize, Window* window);

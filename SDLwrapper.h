@@ -238,15 +238,18 @@ class SDL_SW_YUVTexture_Wrapper
         }
         ~SDL_Surface_Wrapper()
         {
-            if(pixels)
+            if(this)
             {
-                //free(pixels);
-                //pixels = 0;
-            }
-            if(map)
-            {
-                //delete map;
-                //map = 0;
+                if(pixels && flags == SDL_PREALLOC)
+                {
+                    free(pixels);
+                    pixels = 0;
+                }
+                if(map)
+                {
+                    delete map;
+                    map = 0;
+                }
             }
         }
         Uint32 flags;               /**< Read-only */

@@ -1,10 +1,31 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_video.h>
-#include <SDL2/SDL_timer.h>
-#include <SDL2/SDL_ttf.h>
+#ifdef __linux__ 
+    #include <unistd.h>
+    #include <SDL2/SDL.h>
+    #include <SDL2/SDL_video.h>
+    #include <SDL2/SDL_timer.h>
+    #include <SDL2/SDL_ttf.h>
+#elif _WIN32
+    #include "SDL2/SDL.h"
+    #include "SDL2/SDL_video.h"
+    #include "SDL2/SDL_timer.h"
+    #include "SDL2/SDL_ttf.h"
+
+    #define usleep _sleep
+#elif _WIN64
+    //#include <windows.h>
+    #include "SDL2/SDL.h"
+    #include "SDL2/SDL_video.h"
+    #include "SDL2/SDL_timer.h"
+    #include "SDL2/SDL_ttf.h"
+    #define usleep _sleep
+#endif
+
+
 #include <vector>
 #include <string>
-#include <unistd.h>
+
+
+
 #include <stdio.h>
 
 #include "SDLwrapper.h"
