@@ -75,6 +75,27 @@ namespace LGUI
             return NULL;
         }
 
+        std::vector<UIComponent*> getComponents(SDL_Rect area)
+        {
+            std::vector<UIComponent*> results;
+            for(int i = 0; i < components.size(); i++)
+            {
+                if(components.at(i)->rectIsInBorders(area))
+                {
+                    results.push_back(components.at(i));
+                }
+            }
+            return results;
+        }
+
+        SDL_Rect getRect()
+        {
+            SDL_Rect winRec;
+            SDL_GetWindowSize(window, &winRec.w, &winRec.h);
+            SDL_GetWindowPosition(window, &winRec.x, &winRec.y);
+            return winRec;
+        }
+
         void setWindowMode(SDL_DisplayMode* mode)
         {
             SDL_SetWindowDisplayMode(window, mode);

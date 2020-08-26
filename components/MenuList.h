@@ -116,11 +116,15 @@ namespace LGUI
     {
 
         SDL_Rect box;
+        SDL_Rect selectBox;
         RGBA fill;
+        RGBA selectColor;
         RGBA border;
         RGBA textColor;
         int initialTextSize = 12;
         int borderSize = 1;
+        bool mouseInBox = false;
+        std::vector<UIComponent*> overlappedComponents;
 
         UIComponent* optionalParent;
 
@@ -128,7 +132,7 @@ namespace LGUI
 
         public:
 
-        MenuList(int x, int y, int width, int hight, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
+        MenuList(int x, int y, int width, int hight, RGBA colorFill, RGBA colorSelect, RGBA colorBorder, Window* window, int textSize);
 
         ~MenuList()
         {
@@ -181,6 +185,19 @@ namespace LGUI
         unsigned int getBorderSize()
         {
             return borderSize;
+        }
+
+        void setEnabled(bool enabled)
+        {
+            if(overlappedComponents.size() > 0 && !enabled)
+            {
+                for(int i = 0; i < overlappedComponents.size(); i++)
+                {
+                    overlappedComponents.at(i)->setEnabled(true);
+                }
+                overlappedComponents.clear();
+            }
+            this->setProperties(isHidden(), enabled);
         }
 
         SDL_Rect& getRect()

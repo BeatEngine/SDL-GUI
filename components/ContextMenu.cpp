@@ -8,7 +8,9 @@ namespace LGUI
         box.w = width;
         box.h = hight;
         this->menu = menu;
+        this->menu->setParent(this);
         this->setHidden(true);
+        menu->setEnabled(false);
     }
 
     bool ContextMenu::update(Window* window)
@@ -36,6 +38,7 @@ namespace LGUI
                     if(event.button.y >= box.y && event.button.y <= box.y+box.h)
                     {
                         this->setHidden(true);
+                        menu->setEnabled(false);
                     }
                 }
             }
@@ -47,6 +50,7 @@ namespace LGUI
                     {
                         this->menu->setPosition(event.button.x, event.button.y);
                         this->setHidden(false);
+                        menu->setEnabled(true);
                     }
                 }
             }

@@ -57,7 +57,7 @@ namespace LGUI
         return false;
     }
 
-    MenuList::MenuList(int x, int y, int width, int hight, RGBA colorFill, RGBA colorBorder, Window* window, int textSize = 12)
+    MenuList::MenuList(int x, int y, int width, int hight, RGBA colorFill,RGBA colorSelect, RGBA colorBorder, Window* window, int textSize = 12)
     {
         box.x = x;
         box.y = y;
@@ -65,7 +65,11 @@ namespace LGUI
         box.h = hight;
         fill = colorFill;
         border = colorBorder;
-
+        selectColor = colorSelect;
+        selectBox.h = 0;
+        selectBox.x = box.x;
+        selectBox.w = box.w;
+        selectBox.y = box.y;
     }
 
     bool MenuList::update(Window* window)
@@ -77,6 +81,11 @@ namespace LGUI
         
         window->setColor(fill);
         SDL_RenderFillRect(window->getRenderer(), &box);
+        if(mouseInBox)
+        {
+            window->setColor(selectColor);
+            SDL_RenderFillRect(window->getRenderer(), &selectBox);
+        }
         for(int i = 0; i  < entries.size(); i++)
         {
             entries.at(i)->update(window);
@@ -100,6 +109,11 @@ namespace LGUI
         {
             window->setColor(fill);
             SDL_RenderFillRect(window->getRenderer(), &box);
+            if(mouseInBox)
+            {
+                window->setColor(selectColor);
+                SDL_RenderFillRect(window->getRenderer(), &selectBox);
+            }
             for(int i = 0; i  < entries.size(); i++)
             {
                 entries.at(i)->update(window, event);
@@ -117,13 +131,43 @@ namespace LGUI
         }
         if(isEnabled())
         {
-            if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+            if(overlappedComponents.size() == 0)
             {
-                if(event.button.x >= box.x && event.button.x <= box.x+box.w)
+                overlappedComponents = window->getComponents(box);
+                for(int i = 0; i < overlappedComponents.size(); i++)
                 {
-                    if(event.button.y >= box.y && event.button.y <= box.y+box.h)
+                    if(!overlappedComponents.at(i)->isEnabled())
                     {
-
+                        overlappedComponents.erase(overlappedComponents.begin()+i);
+                        i--;
+                    }
+                    else
+                    {
+                        overlappedComponents.at(i)->setEnabled(false);
+                    }
+                }
+                setProperties(isHidden(), true);
+                UIComponent* parent = getParentWhenSet();
+                if (parent)
+                {
+                    parent->setProperties(parent->isHidden(), true);
+                }
+                
+            }
+            if(event.type == SDL_MOUSEMOTION)
+            {
+                mouseInBox = false;
+                if(event.motion.x >= box.x && event.motion.x <= box.x+box.w)
+                {
+                    if(event.motion.y >= box.y && event.motion.y < box.y+box.h && entries.size() > 0)
+                    {
+                        mouseInBox = true;
+                        selectBox.h = entries.at(0)->getRect().h;
+                        selectBox.x = box.x;
+                        int indx = (int)((event.motion.y-box.y) / (float)box.h * entries.size());
+                        selectBox.y = box.y+indx*entries.at(0)->getRect().h;
+                        
+                        
                     }
                 }
             }

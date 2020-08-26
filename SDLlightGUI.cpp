@@ -148,7 +148,7 @@ int main(int args, char** arg)
 
     LGUI::ScrollBox* content = new LGUI::ScrollBox(0, 0, 1000, 1000, LGUI::RGBA(255,255,255,0),LGUI::RGBA(0, 0, 0, 255), &window, contlist);
 
-    LGUI::MenuList* menuContext = new LGUI::MenuList(0, 0, 70, 200, LGUI::RGBA(220, 220, 220, 255), LGUI::RGBA(0, 0, 0, 255), &window);
+    LGUI::MenuList* menuContext = new LGUI::MenuList(0, 0, 70, 200,LGUI::RGBA(240, 240, 240, 255), LGUI::RGBA(220, 220, 220, 255), LGUI::RGBA(0, 0, 0, 255), &window);
 
     menuContext->addEntrie("Exit", &window, contextOnExit);
     menuContext->addEntrie("Brexit", &window, contextOnExit);
