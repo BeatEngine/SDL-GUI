@@ -132,9 +132,15 @@ int main(int args, char** arg)
     LGUI::UIComponent* elements2[] = {list1, NULL};
     LGUI::ScrollBox* scroll1 = new LGUI::ScrollBox(50, 440, 200, 400, LGUI::RGBA(255, 255, 255, 0), LGUI::RGBA(0, 0, 0, 255), &window, elements2);
 
+
+    LGUI::ProgressBar* progressScroll = new LGUI::ProgressBar(400, 400, 300,20,"scrollY: ", LGUI::RGBA(100, 255, 100, 255), LGUI::RGBA(240, 240, 240, 255), LGUI::RGBA(50, 50, 50, 0), &window, true, 14);
+
+    progressScroll->setBoxCornerRadius(4);
+    progressScroll->setBorder(LGUI::RGBA(50, 50, 50, 255), 1);
+
     LGUI::UIComponent* components1[] = {button2, button3, NULL};
     LGUI::UIComponent* components2[] = {button4, button5, NULL};
-    LGUI::UIComponent* components3[] = {scroll1, NULL};
+    LGUI::UIComponent* components3[] = {scroll1, progressScroll, NULL};
 
     LGUI::ContainerTab* tab1 = new LGUI::ContainerTab(std::string("Tab 1"), components1);
     LGUI::ContainerTab* tab2 = new LGUI::ContainerTab(std::string("Tab 2"), components2);
@@ -162,6 +168,7 @@ int main(int args, char** arg)
     window.addComponent(contextMenu);
     while (window.update()) //window main loop
     {
+        progressScroll->setProgress(scroll1->getScrollY(), window.getRenderer());
         window.updateScreen();
     }
 

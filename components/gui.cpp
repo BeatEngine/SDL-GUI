@@ -8,7 +8,7 @@
 #include "ScrollBar.cpp"
 #include "MenuList.cpp"
 #include "ContextMenu.cpp"
-
+#include "ProgressBar.cpp"
 
 
 

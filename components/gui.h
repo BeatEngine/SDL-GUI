@@ -91,6 +91,83 @@ namespace LGUI
         }
     }
 
+    void renderFillBoxRounded(SDL_Renderer* renderer, int x, int y, int width, int hight, int roundFactor, int borderX = 999999, int borderY = 999999)
+    {
+        if(roundFactor > 7)
+        {
+            SDL_Rect trec;
+            trec.x = x;
+            trec.y = y;
+            trec.w = width;
+            trec.h = hight;
+            SDL_RenderFillRect(renderer, &trec);
+            return;
+        }
+        int yy;
+        int radius = width;
+        float tmp;
+        float tmp2;
+        int cx = x + width/2;
+        int cy = y + hight/2;
+        int i;
+        for(int xx = -width/2; xx < width/2; xx++)
+        {
+            for(yy = -hight/2; yy < hight/2; yy++)
+            {
+                tmp = powf(xx, 2*roundFactor)/powf(width/2, 2*roundFactor) + powf(yy, 2*roundFactor)/powf(hight/2, 2*roundFactor);
+                if(tmp <= 1 && yy + hight/2 > 0 && xx + width/2 > 0 && xx + width/2 < borderX && yy + hight/2 < borderY)
+                {
+                    SDL_RenderDrawPoint(renderer,x + xx + width/2 -1, y + yy + hight/2 -1);
+                }
+            }
+        }
+    }
+
+    void renderDrawBoxRounded(SDL_Renderer* renderer, int x, int y, int width, int hight, int roundFactor, int thickness, int borderX = 999999, int borderY = 999999)
+    {
+        if(roundFactor > 7)
+        {
+            SDL_Rect trec;
+            trec.x = x;
+            trec.y = y;
+            trec.w = width;
+            trec.h = hight;
+            for(int i = 0; i < thickness; i++)
+            {
+                SDL_RenderDrawRect(renderer, &trec);
+                trec.x += 1;
+                trec.y += 1;
+                trec.h -= 2;
+                trec.w -= 2;
+            }
+            return;
+        }
+        int yy;
+        int radius = width;
+        float tmp;
+        float tmp2;
+        int cx = x + width/2;
+        int cy = y + hight/2;
+        int i;
+        std::vector<SDL_Point> points;
+        for(int xx = -width/2; xx < width/2; xx++)
+        {
+            for(yy = -hight/2; yy < hight/2; yy++)
+            {
+                tmp = powf(xx, 2*roundFactor)/powf(width/2, 2*roundFactor) + powf(yy, 2*roundFactor)/powf(hight/2, 2*roundFactor);
+                tmp2 = powf(xx, 2*roundFactor)/powf((width-3-thickness)/2, 2*roundFactor) + powf(yy, 2*roundFactor)/powf((hight-3-thickness)/2, 2*roundFactor);
+                if(tmp <= 1 && tmp2 > 1 && yy + hight/2 > 0 && xx + width/2 > 0  && xx + width/2 < borderX && yy + hight/2 < borderY)
+                {
+                    points.push_back(SDL_Point());
+                    points.back().x = x + xx + width/2 -1;
+                    points.back().y = y + yy + hight/2 -1;
+                    //SDL_RenderDrawPoint(renderer,x + xx + width/2 -1, y + yy + hight/2 -1);
+                }
+            }
+        }
+        SDL_RenderDrawPoints(renderer, points.data(), points.size());
+    }
+
 }
 
 
@@ -104,6 +181,7 @@ namespace LGUI
 #include "ScrollBar.h"
 #include "MenuList.h"
 #include "ContextMenu.h"
+#include "ProgressBar.h"
 
 
 
