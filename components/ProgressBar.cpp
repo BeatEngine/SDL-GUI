@@ -24,12 +24,12 @@ namespace LGUI
             return false;
         }
         window->setColor(background);
-        renderFillBoxRounded(window->getRenderer(), box.x, box.y, box.w, box.h, cornerRadius);
+        renderFillBoxRounded2(window->getRenderer(), box.x, box.y, box.w, box.h, cornerRadius, 9999, 9999);
         SDL_Rect tmp = box;
         window->setColor(fill);
-        renderFillBoxRounded(window->getRenderer(), tmp.x, tmp.y, tmp.w, tmp.h, cornerRadius, tmp.w * progress);
+        renderFillBoxRounded2(window->getRenderer(), tmp.x, tmp.y, tmp.w, tmp.h, cornerRadius, tmp.w * progress, 9999);
         window->setColor(border);
-        renderDrawBoxRounded(window->getRenderer(), box.x, box.y, box.w, box.h, cornerRadius, borderSize);
+        renderDrawBoxRounded2(window->getRenderer(), box.x, box.y, box.w, box.h, cornerRadius, borderSize, 9999, 9999);
         if(showText)
         {
             text.update(window);
@@ -42,12 +42,12 @@ namespace LGUI
         if(!isHidden())
         {
             window->setColor(background);
-            renderFillBoxRounded(window->getRenderer(), box.x, box.y, box.w, box.h, cornerRadius);
+            renderFillBoxRounded2(window->getRenderer(), box.x, box.y, box.w, box.h, cornerRadius);
             SDL_Rect tmp = box;
             window->setColor(fill);
-            renderFillBoxRounded(window->getRenderer(), tmp.x, tmp.y, tmp.w, tmp.h, cornerRadius, tmp.w * progress);
+            renderFillBoxRounded2(window->getRenderer(), tmp.x, tmp.y, tmp.w, tmp.h, cornerRadius, tmp.w * progress);
             window->setColor(border);
-            renderDrawBoxRounded(window->getRenderer(), box.x, box.y, box.w, box.h, cornerRadius, borderSize);
+            renderDrawBoxRounded2(window->getRenderer(), box.x, box.y, box.w, box.h, cornerRadius, borderSize);
             if(showText)
             {
                 text.update(window);

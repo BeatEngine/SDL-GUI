@@ -123,6 +123,92 @@ namespace LGUI
         }
     }
 
+    void renderFillBoxRounded2(SDL_Renderer* renderer, int x, int y, int width, int hight, float roundFactor, int borderX = 999999, int borderY = 999999)
+    {
+        int yy;
+        int radius = width;
+        float tmp;
+        float tmp2;
+        int cx = x + width/2;
+        int cy = y + hight/2;
+        float rw = 0.5*sqrtf(2)*width * roundFactor;
+        float rh = 0.5*sqrtf(2)*hight * roundFactor;
+        int i;
+        float d = sqrt(width*width+hight*hight);
+        float thicknessFactor = roundFactor*3;
+        d /= 2;
+        //renderDrawEllipse(renderer, cx, cy, 0.5*sqrtf(2)*width, 0.5*sqrtf(2)*hight, 1);
+        d *= roundFactor;
+        //renderDrawEllipse(renderer, cx, cy, 0.5*sqrtf(2)*width * roundFactor, 0.5*sqrtf(2)*hight * roundFactor, 1);
+        //renderDrawCircle(renderer, cx, cy, d, 1);
+        for(int xx = -width/2; xx < width/2; xx++)
+        {
+            for(yy = -hight/2; yy <= hight/2; yy++)
+            {
+                tmp = xx*xx/(rw*rw) + yy*yy/(rh*rh);
+                tmp2 = xx*xx/((rw-thicknessFactor)*(rw-thicknessFactor)) + yy*yy/((rh-thicknessFactor)*(rh-thicknessFactor));
+                if(sqrt(xx*xx+yy*yy) < d && tmp < 1 && xx + width/2 < borderX && yy + hight/2 < borderY)
+                {
+                    SDL_RenderDrawPoint(renderer,x + xx + width/2, y + yy + hight/2);
+                }
+            }
+        }
+    }
+    void renderDrawBoxRounded2(SDL_Renderer* renderer, int x, int y, int width, int hight, float roundFactor, int thickness, int borderX = 999999, int borderY = 999999)
+    {
+        if(roundFactor >= 1)
+        {
+            SDL_Rect trec;
+            trec.x = x;
+            trec.y = y;
+            trec.w = width;
+            trec.h = hight;
+            for(int i = 0; i < thickness; i++)
+            {
+                SDL_RenderDrawRect(renderer, &trec);
+                trec.x += 1;
+                trec.y += 1;
+                trec.h -= 2;
+                trec.w -= 2;
+            }
+            return;
+        }
+        if(thickness <= 0)
+        {
+            return;
+        }
+        float thicknessFactor = roundFactor*3;
+        int yy;
+        int radius = width;
+        float tmp;
+        float tmp2;
+        float tmp3;
+        int cx = x + width/2;
+        int cy = y + hight/2;
+        float rw = 0.5*sqrtf(2)*width * roundFactor;
+        float rh = 0.5*sqrtf(2)*hight * roundFactor;
+        int i;
+        float d = sqrt(width*width+hight*hight);
+        d /= 2;
+        //renderDrawEllipse(renderer, cx, cy, 0.5*sqrtf(2)*width, 0.5*sqrtf(2)*hight, 1);
+        d *= roundFactor;
+        //renderDrawEllipse(renderer, cx, cy, 0.5*sqrtf(2)*width * roundFactor, 0.5*sqrtf(2)*hight * roundFactor, 1);
+        //renderDrawCircle(renderer, cx, cy, d, 1);
+        for(int xx = -width/2; xx < width/2; xx++)
+        {
+            for(yy = -hight/2 ; yy <= hight/2; yy++)
+            {
+                tmp = xx*xx/(rw*rw) + yy*yy/(rh*rh);
+                tmp2 = xx*xx/((rw-thickness-thicknessFactor)*(rw-thickness-thicknessFactor)) + yy*yy/((rh-thickness-thicknessFactor)*(rh-thickness-thicknessFactor));
+                tmp3 = sqrt(xx*xx+yy*yy);
+                if(tmp3 < d && tmp <= 1 && (tmp3 > d-thickness  || tmp2 >= 1) && xx + width/2 < borderX && yy + hight/2 < borderY)
+                {
+                    SDL_RenderDrawPoint(renderer,x + xx + width/2, y + yy + hight/2);
+                }
+            }
+        }
+    }
+
     void renderDrawBoxRounded(SDL_Renderer* renderer, int x, int y, int width, int hight, int roundFactor, int thickness, int borderX = 999999, int borderY = 999999)
     {
         if(roundFactor > 7)

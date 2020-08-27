@@ -135,8 +135,8 @@ int main(int args, char** arg)
 
     LGUI::ProgressBar* progressScroll = new LGUI::ProgressBar(400, 400, 300,20,"scrollY: ", LGUI::RGBA(100, 255, 100, 255), LGUI::RGBA(240, 240, 240, 255), LGUI::RGBA(50, 50, 50, 0), &window, true, 14);
 
-    progressScroll->setBoxCornerRadius(4);
-    progressScroll->setBorder(LGUI::RGBA(50, 50, 50, 255), 1);
+    progressScroll->setBoxCornerRadius(0.95);
+    progressScroll->setBorder(LGUI::RGBA(50, 50, 50, 255),  1);
 
     LGUI::UIComponent* components1[] = {button2, button3, NULL};
     LGUI::UIComponent* components2[] = {button4, button5, NULL};
