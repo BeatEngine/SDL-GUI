@@ -258,6 +258,7 @@ namespace LGUI
 
 
 #include "Component.h"
+#include "Sprite.h"
 #include "Text.h"
 #include "Button.h"
 #include "InputBox.h"

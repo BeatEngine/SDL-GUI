@@ -160,6 +160,42 @@ class SDL_SW_YUVTexture_Wrapper
     class SDL_PixelFormat_Wrapper
     {
         public:
+        SDL_PixelFormat_Wrapper(int bytesPerPixel, int format)
+        {
+            this->format = format;
+            this->BitsPerPixel = bytesPerPixel*8;
+            this->BytesPerPixel = bytesPerPixel;
+            padding[0] = 0;
+            padding[1] = 0;
+            Uint32 rmask, gmask, bmask, amask;
+            #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+            int shift = (format == 3) ? 8 : 0;
+            rmask = 0xff000000 >> shift;
+            gmask = 0x00ff0000 >> shift;
+            bmask = 0x0000ff00 >> shift;
+            amask = 0x000000ff >> shift;
+            #else // little endian, like x86
+            rmask = 0x000000ff;
+            gmask = 0x0000ff00;
+            bmask = 0x00ff0000;
+            amask = 0xff000000;
+            #endif
+            Rmask = rmask;
+            Gmask = gmask;
+            Bmask = bmask;
+            Amask = amask;
+            Rloss = 0;
+            Gloss = 0;
+            Bloss = 0;
+            Aloss = 0;
+            Rshift = 0;
+            Gshift = 0;
+            Bshift = 0;
+            Ashift = 0;
+            refcount = 0;
+            next = 0;
+            palette = 0;
+        }
         SDL_PixelFormat_Wrapper(SDL_PixelFormat_Wrapper* other)
         {
             format = other->format;

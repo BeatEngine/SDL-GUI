@@ -6,7 +6,6 @@ void changeText(void** parameters)
     LGUI::Button* button = (LGUI::Button*)parameters[1];
     LGUI::Window* window = (LGUI::Window*)parameters[0];
 
-
     LGUI::InputBox* inp = (LGUI::InputBox*)window->getComponent(1001);
     std::string txt("");
     if(inp)
@@ -163,9 +162,13 @@ int main(int args, char** arg)
 
     LGUI::ContextMenu* contextMenu = new LGUI::ContextMenu(0, 0, 9999, 9999, menuContext, &window);
 
+    LGUI::Sprite* image1 = new LGUI::Sprite(600,50,300,300, LGUI::RGBA(0, 0, 0, 255), &window, "Components.png");
+
     window.addComponent(container);
 
     window.addComponent(contextMenu);
+
+    window.addComponent(image1);
     while (window.update()) //window main loop
     {
         progressScroll->setProgress(scroll1->getScrollY(), window.getRenderer());

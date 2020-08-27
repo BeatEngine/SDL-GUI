@@ -1,4 +1,5 @@
 
+#include "Sprite.cpp"
 #include "Text.cpp"
 #include "Button.cpp"
 #include "InputBox.cpp"
