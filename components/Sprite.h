@@ -14,11 +14,33 @@ class Sprite: public UIComponent
     bool loaded = false;
     void* onLeftClick;
     void* onRightClick;
+    void* onMouseEnter;
+    void* onMouseMove;
+    void* onMouseLeft;
+    bool mouseInside = false;
+    bool mouseButtonDown = false;
+    int lastMouseX = -1;
+    int lastMouseY = -1;
     UIComponent* optionalParent;
     bool fitParent = false;
     bool fitBox = true;
     bool fixedAspectRatio = true;
     public:
+
+    int getLastMouseX()
+    {
+        return lastMouseX;
+    }
+
+    int getLastMouseY()
+    {
+        return lastMouseY;
+    }
+
+    bool isLeftButtonDown()
+    {
+        return mouseButtonDown;
+    }
 
     Sprite(int x, int y, int width, int hight, RGBA colorBorder, Window* window, std::string loadFromFilePath);
 
@@ -162,9 +184,19 @@ class Sprite: public UIComponent
 
     void setPosition(int x, int y)
     {
+        if(x < 0)
+        {
+            x = 0;
+        }
+        if(y < 0)
+        {
+            y = 0;
+        }
         box.x = x;
         box.y = y;
     }
+
+    void setPosition(int x, int y, Window* window);
 
     void setSize(int width, int hight)
     {
@@ -193,6 +225,19 @@ class Sprite: public UIComponent
         return box;
     }
 
+    SDL_Rect& getPosition()
+    {
+        return box;
+    }
+
+    void setLastCursorPosition(int x, int y)
+    {
+        lastMouseX = x;
+        lastMouseY = y;
+    }
+
+    SDL_Rect getPositionScaled(Window* window);
+
     void setOnLeftClick(void (*event)(void** parameters))
     {
         onLeftClick = (void*)(event);
@@ -201,6 +246,21 @@ class Sprite: public UIComponent
     void setOnRightClick(void (*event)(void** parameters))
     {
         onRightClick = (void*)(event);
+    }
+
+    void setOnMouseEnter(void (*event)(void** parameters))
+    {
+        onMouseEnter = (void*)(event);
+    }
+
+    void setOnMouseLeft(void (*event)(void** parameters))
+    {
+        onMouseLeft = (void*)(event);
+    }
+
+    void setOnMouseMove(void (*event)(void** parameters))
+    {
+        onMouseMove = (void*)(event);
     }
 
     UIComponent* getParentWhenSet()
@@ -221,6 +281,21 @@ class Sprite: public UIComponent
     void* getOnRightClick()
     {
         return onRightClick;
+    }
+
+    void* getOnMouseEnter()
+    {
+        return onMouseEnter;
+    }
+
+    void* getOnMouseLeft()
+    {
+        return onMouseLeft;
+    }
+
+    void* getOnMouseMove()
+    {
+        return onMouseMove;
     }
 
 };

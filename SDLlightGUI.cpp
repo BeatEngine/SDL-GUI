@@ -66,6 +66,24 @@ void contextOnExit(void** parametes)
     exit(0);
 }
 
+void imageOnMouseMove(void** parameters)
+{
+    LGUI::Sprite* sprite = (LGUI::Sprite*)parameters[1];
+    LGUI::Window* window = (LGUI::Window*)parameters[0];
+    SDL_Event* motionEvent = (SDL_Event*)parameters[2];
+    if(sprite->isLeftButtonDown() && sprite->getLastMouseX() >= 0 && sprite->getLastMouseY() >= 0)
+    {
+        int mx = motionEvent->motion.x - sprite->getLastMouseX();
+        int my = motionEvent->motion.y - sprite->getLastMouseY();
+
+        SDL_Rect pos = sprite->getPosition();
+        pos.x += mx;
+        pos.y += my;
+        sprite->setPosition(pos.x, pos.y, window);
+        //sprite->setLastCursorPosition(pos.x, pos.y);
+    }
+}
+
 int main(int args, char** arg)
 {
     std::string title = "Light GUI Demo";
@@ -164,8 +182,10 @@ int main(int args, char** arg)
     contextMenu->setLayer(2);
 
     LGUI::Sprite* image1 = new LGUI::Sprite(450,100,500,500, LGUI::RGBA(0, 0, 0, 255), &window, "Components.png");
+    image1->setBorder(LGUI::RGBA(0, 0, 0, 255), 1);
     image1->setFitRules(true);
     image1->setLayer(0);
+    image1->setOnMouseMove(imageOnMouseMove);
 
     window.addComponent(container);
 
