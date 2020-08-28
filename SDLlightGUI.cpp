@@ -162,7 +162,9 @@ int main(int args, char** arg)
 
     LGUI::ContextMenu* contextMenu = new LGUI::ContextMenu(0, 0, 9999, 9999, menuContext, &window);
 
-    LGUI::Sprite* image1 = new LGUI::Sprite(600,50,300,300, LGUI::RGBA(0, 0, 0, 255), &window, "Components.png");
+    LGUI::Sprite* image1 = new LGUI::Sprite(450,100,500,500, LGUI::RGBA(0, 0, 0, 255), &window, "Components.png");
+
+    image1->setFitRules(true);
 
     window.addComponent(container);
 

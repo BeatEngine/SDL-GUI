@@ -19,6 +19,9 @@ namespace LGUI
         void* onLeftClick;
         void* onRightClick;
         UIComponent* optionalParent;
+        bool fitParent = false;
+        bool fitBox = true;
+        bool fixedAspectRatio = true;
         public:
 
         Sprite(int x, int y, int width, int hight, RGBA colorBorder, Window* window, std::string loadFromFilePath);
@@ -28,10 +31,11 @@ namespace LGUI
             if(loaded)
             {
                 SDL_DestroyTexture(texture);
-                if(image)
+                SDL_FreeSurface(image);
+                /*if(image)
                 {
                     ((SDL_Surface_Wrapper*)(image))->~SDL_Surface_Wrapper();
-                }
+                }*/
             }
         }
 
@@ -44,10 +48,11 @@ namespace LGUI
             if(loaded)
             {
                 SDL_DestroyTexture(texture);
-                if(image)
+                SDL_FreeSurface(image);
+                /*if(image)
                 {
                     ((SDL_Surface_Wrapper*)(image))->~SDL_Surface_Wrapper();
-                }
+                }*/
             }
             FILE* f = fopen(filePath.c_str(), "rb");
             if(!f)
@@ -56,54 +61,101 @@ namespace LGUI
                 loaded = false;
                 return false;
             }
+            
 
-            int channels = 0;
-            int x = 0;
-            int y = 0;
-            SDL_Surface_Wrapper* swapper = new SDL_Surface_Wrapper();
-            void* pixels = stbi_load_from_file(f, &x, &y, &channels, STBI_rgb_alpha);
-            if(!pixels)
+            int req_format = STBI_rgb_alpha;
+            int width, height, orig_format;
+            unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &orig_format, req_format);
+            if(data == 0)
             {
-                printf( "File loading error: %s\n", filePath.c_str());
+                printf("Failed to load image. STBI-Error:%s\n", stbi_failure_reason());
                 loaded = false;
                 return false;
             }
-            swapper->w = x;
-            swapper->h = y;
-            swapper->pixels = pixels;
-            swapper->format = new SDL_PixelFormat_Wrapper(channels, channels);
-            image = (SDL_Surface*)swapper;
-            return true;
+            // Only STBI_rgb (3) and STBI_rgb_alpha (4) are supported here!
+            Uint32 rmask, gmask, bmask, amask;
+
+            #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+            int shift = (req_format == STBI_rgb) ? 8 : 0;
+            rmask = 0xff000000 >> shift;
+            gmask = 0x00ff0000 >> shift;
+            bmask = 0x0000ff00 >> shift;
+            amask = 0x000000ff >> shift;
+            #else // little endian, like x86
+            rmask = 0x000000ff;
+            gmask = 0x0000ff00;
+            bmask = 0x00ff0000;
+            amask = (req_format == STBI_rgb) ? 0 : 0xff000000;
+            #endif
+
+            int depth, pitch;
+            if (req_format == STBI_rgb)
+            {
+                depth = 24;
+                pitch = 3*width;
+            }
+            else
+            {
+                depth = 32;
+                pitch = 4*width;
+            }
+            image = SDL_CreateRGBSurfaceFrom((void*)data, width, height, depth, pitch, rmask, gmask, bmask, amask);
+            if (image == 0) {
+                SDL_Log("Creating surface failed: %s", SDL_GetError());
+                stbi_image_free(data);
+                loaded = false;
+                return false;
+            }
+            texture = SDL_CreateTextureFromSurface(renderer, image);
+            stbi_image_free(data);
+            loaded = true;
         }
 
-        bool load(void* data, size_t bytesPerPixel, int width, int hight, SDL_Renderer* renderer)
+        bool load(void* data, size_t bytesPerPixel, int width, int height, SDL_Renderer* renderer)
         {
             if(loaded)
             {
                 SDL_DestroyTexture(texture);
-                if(image)
+                SDL_FreeSurface(image);
+                /*if(image)
                 {
                     ((SDL_Surface_Wrapper*)(image))->~SDL_Surface_Wrapper();
-                }
+                }*/
             }
             if(data == 0)
             {
                 loaded = false;
                 return false;
             }
-            SDL_Surface_Wrapper* swapper = new SDL_Surface_Wrapper();
-            if(!data)
-            {
-                printf( "Sprite load fails (data is NULL)\n");
+            Uint32 rmask, gmask, bmask, amask;
+
+            #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+            int shift = (req_format == STBI_rgb) ? 8 : 0;
+            rmask = 0xff000000 >> shift;
+            gmask = 0x00ff0000 >> shift;
+            bmask = 0x0000ff00 >> shift;
+            amask = 0x000000ff >> shift;
+            #else // little endian, like x86
+            rmask = 0x000000ff;
+            gmask = 0x0000ff00;
+            bmask = 0x00ff0000;
+            amask = (bytesPerPixel == STBI_rgb) ? 0 : 0xff000000;
+            #endif
+            image = SDL_CreateRGBSurfaceFrom((void*)data, width, height, bytesPerPixel*8, bytesPerPixel*width, rmask, gmask, bmask, amask);
+            if (image == 0) {
+                SDL_Log("Creating surface failed: %s", SDL_GetError());
+                stbi_image_free(data);
                 loaded = false;
                 return false;
             }
-            swapper->w = width;
-            swapper->h = hight;
-            memcpy(swapper->pixels, data, bytesPerPixel*width*hight);
-            swapper->format = new SDL_PixelFormat_Wrapper(bytesPerPixel, bytesPerPixel);
-            image = (SDL_Surface*)swapper;
+            texture = SDL_CreateTextureFromSurface(renderer, image);
             return true;
+        }
+
+        void getImageDimensions(int* width, int* hight)
+        {
+            *width = image->w;
+            *hight = image->h;
         }
 
         void setBorder(RGBA color, int size = 1)
@@ -122,6 +174,17 @@ namespace LGUI
         {
             box.w = width;
             box.h = hight;
+        }
+
+        void setFitRules(bool fitParent, bool fitBox = true, bool fixedAspectRatio = true, UIComponent* parentSet = 0)
+        {
+            if(parentSet)
+            {
+                setParent(parentSet);
+            }
+            this->fitParent = fitParent;
+            this->fixedAspectRatio = fixedAspectRatio;
+            this->fitBox = fitBox;
         }
 
         unsigned int getBorderSize()

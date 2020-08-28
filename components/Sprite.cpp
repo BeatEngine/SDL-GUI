@@ -3,6 +3,7 @@ namespace LGUI
 
     Sprite::Sprite(int x, int y, int width, int hight, RGBA colorBorder, Window* window, std::string loadFromFilePath = "")
     {
+        setParent(0);
         onRightClick = NULL;
         onLeftClick = NULL;
         box.x = x;
@@ -22,26 +23,56 @@ namespace LGUI
         {
             return false;
         }
-        SDL_RenderSetScale(window->getRenderer(), box.w/(float)(image->w), box.h/(float)(image->h));
-
-        if(rectIsInBorders(box))
+        //SDL_RenderSetScale(window->getRenderer(), box.w/(float)(image->w), box.h/(float)(image->h));
+        SDL_Rect tmp = box;
+        if(!fitBox)
         {
-            if(SDL_RenderCopy(window->getRenderer(), texture, NULL, &box) != 0)
+            tmp.w = image->w;
+            tmp.h = image->h;
+        }
+        if(fitParent)
+        {
+            UIComponent* tparent = getParentWhenSet();
+            if(tparent == 0)
+            {
+                tmp.w = window->getRect().w - tmp.x;
+                tmp.h = window->getRect().h - tmp.y;
+            }
+            else
+            {
+                tmp.w = tparent->getDrawBorderRect().w;
+                tmp.h = tparent->getDrawBorderRect().h;
+            }
+        }
+        if(fixedAspectRatio)
+        {
+            if(image->w > image->h)
+            {
+                tmp.h =(int)(tmp.w * image->h / (float)image->w);
+            }
+            else
+            {
+                tmp.w = (int)(tmp.h * image->w / (float)image->h);
+            }
+        }
+        if(rectIsInBorders(tmp))
+        {
+            if(SDL_RenderCopy(window->getRenderer(), texture, NULL, &tmp) != 0)
             {
                 printf("Text: SDL-Error: %s\n", SDL_GetError());
             }
         }
         else
         {
-            SDL_Rect cropped = cropToDrawBorders(box);
-            if(SDL_RenderCopy(window->getRenderer(), texture, &cropped, &box) != 0)
+            SDL_Rect cropped = cropToDrawBorders(tmp);
+            if(SDL_RenderCopy(window->getRenderer(), texture, &cropped, &tmp) != 0)
             {
                 printf("Text: SDL-Error: %s\n", SDL_GetError());
             }
         }
-        SDL_RenderSetScale(window->getRenderer(), 1.00f, 1.00f);
+        //SDL_RenderSetScale(window->getRenderer(), 1.00f, 1.00f);
         window->setColor(border);
-        SDL_Rect tmp = cropToDrawBorders(box);
+        tmp = cropToDrawBorders(box);
         for(int i = 0; i < borderSize; i++)
         {
             SDL_RenderDrawRect(window->getRenderer(), &tmp);
