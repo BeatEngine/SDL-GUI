@@ -1,4 +1,5 @@
 #include <time.h>
+#include <algorithm>
 namespace LGUI
 {
     class Window
@@ -59,6 +60,8 @@ namespace LGUI
         void addComponent(UIComponent* component)
         {
             components.push_back(component);
+            std::sort (components.begin(), components.end(), UIComponent::compareLayer);
+            
             //update();
             //updateScreen();
         }

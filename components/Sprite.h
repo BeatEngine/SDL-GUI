@@ -1,234 +1,227 @@
 #define STB_IMAGE_IMPLEMENTATION 
 #include "stb_image.h"
 
-namespace LGUI
+class Sprite: public UIComponent
 {
 
+    SDL_Rect box;
+    RGBA border;
 
-    class Sprite: public UIComponent
+    int borderSize = 0;
+    std::string filePath = "";
+    SDL_Surface* image = NULL;
+    SDL_Texture* texture;
+    bool loaded = false;
+    void* onLeftClick;
+    void* onRightClick;
+    UIComponent* optionalParent;
+    bool fitParent = false;
+    bool fitBox = true;
+    bool fixedAspectRatio = true;
+    public:
+
+    Sprite(int x, int y, int width, int hight, RGBA colorBorder, Window* window, std::string loadFromFilePath);
+
+    ~Sprite()
     {
-
-        SDL_Rect box;
-        RGBA border;
-
-        int borderSize = 0;
-        std::string filePath = "";
-        SDL_Surface* image = NULL;
-        SDL_Texture* texture;
-        bool loaded = false;
-        void* onLeftClick;
-        void* onRightClick;
-        UIComponent* optionalParent;
-        bool fitParent = false;
-        bool fitBox = true;
-        bool fixedAspectRatio = true;
-        public:
-
-        Sprite(int x, int y, int width, int hight, RGBA colorBorder, Window* window, std::string loadFromFilePath);
-
-        ~Sprite()
+        if(loaded)
         {
-            if(loaded)
+            SDL_DestroyTexture(texture);
+            SDL_FreeSurface(image);
+            /*if(image)
             {
-                SDL_DestroyTexture(texture);
-                SDL_FreeSurface(image);
-                /*if(image)
-                {
-                    ((SDL_Surface_Wrapper*)(image))->~SDL_Surface_Wrapper();
-                }*/
-            }
+                ((SDL_Surface_Wrapper*)(image))->~SDL_Surface_Wrapper();
+            }*/
         }
+    }
 
-        bool update(Window* event) override;
+    bool update(Window* event) override;
 
-        bool update(Window* window, SDL_Event& event) override;
+    bool update(Window* window, SDL_Event& event) override;
 
-        bool load(std::string filePath, SDL_Renderer* renderer)
+    bool load(std::string filePath, SDL_Renderer* renderer)
+    {
+        if(loaded)
         {
-            if(loaded)
+            SDL_DestroyTexture(texture);
+            SDL_FreeSurface(image);
+            /*if(image)
             {
-                SDL_DestroyTexture(texture);
-                SDL_FreeSurface(image);
-                /*if(image)
-                {
-                    ((SDL_Surface_Wrapper*)(image))->~SDL_Surface_Wrapper();
-                }*/
-            }
-            FILE* f = fopen(filePath.c_str(), "rb");
-            if(!f)
-            {
-                printf( "File not found: %s\n", filePath.c_str());
-                loaded = false;
-                return false;
-            }
-            
+                ((SDL_Surface_Wrapper*)(image))->~SDL_Surface_Wrapper();
+            }*/
+        }
+        FILE* f = fopen(filePath.c_str(), "rb");
+        if(!f)
+        {
+            printf( "File not found: %s\n", filePath.c_str());
+            loaded = false;
+            return false;
+        }
+        
 
-            int req_format = STBI_rgb_alpha;
-            int width, height, orig_format;
-            unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &orig_format, req_format);
-            if(data == 0)
-            {
-                printf("Failed to load image. STBI-Error:%s\n", stbi_failure_reason());
-                loaded = false;
-                return false;
-            }
-            // Only STBI_rgb (3) and STBI_rgb_alpha (4) are supported here!
-            Uint32 rmask, gmask, bmask, amask;
+        int req_format = STBI_rgb_alpha;
+        int width, height, orig_format;
+        unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &orig_format, req_format);
+        if(data == 0)
+        {
+            printf("Failed to load image. STBI-Error:%s\n", stbi_failure_reason());
+            loaded = false;
+            return false;
+        }
+        // Only STBI_rgb (3) and STBI_rgb_alpha (4) are supported here!
+        Uint32 rmask, gmask, bmask, amask;
 
-            #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-            int shift = (req_format == STBI_rgb) ? 8 : 0;
-            rmask = 0xff000000 >> shift;
-            gmask = 0x00ff0000 >> shift;
-            bmask = 0x0000ff00 >> shift;
-            amask = 0x000000ff >> shift;
-            #else // little endian, like x86
-            rmask = 0x000000ff;
-            gmask = 0x0000ff00;
-            bmask = 0x00ff0000;
-            amask = (req_format == STBI_rgb) ? 0 : 0xff000000;
-            #endif
+        #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+        int shift = (req_format == STBI_rgb) ? 8 : 0;
+        rmask = 0xff000000 >> shift;
+        gmask = 0x00ff0000 >> shift;
+        bmask = 0x0000ff00 >> shift;
+        amask = 0x000000ff >> shift;
+        #else // little endian, like x86
+        rmask = 0x000000ff;
+        gmask = 0x0000ff00;
+        bmask = 0x00ff0000;
+        amask = (req_format == STBI_rgb) ? 0 : 0xff000000;
+        #endif
 
-            int depth, pitch;
-            if (req_format == STBI_rgb)
-            {
-                depth = 24;
-                pitch = 3*width;
-            }
-            else
-            {
-                depth = 32;
-                pitch = 4*width;
-            }
-            image = SDL_CreateRGBSurfaceFrom((void*)data, width, height, depth, pitch, rmask, gmask, bmask, amask);
-            if (image == 0) {
-                SDL_Log("Creating surface failed: %s", SDL_GetError());
-                stbi_image_free(data);
-                loaded = false;
-                return false;
-            }
-            texture = SDL_CreateTextureFromSurface(renderer, image);
+        int depth, pitch;
+        if (req_format == STBI_rgb)
+        {
+            depth = 24;
+            pitch = 3*width;
+        }
+        else
+        {
+            depth = 32;
+            pitch = 4*width;
+        }
+        image = SDL_CreateRGBSurfaceFrom((void*)data, width, height, depth, pitch, rmask, gmask, bmask, amask);
+        if (image == 0) {
+            SDL_Log("Creating surface failed: %s", SDL_GetError());
             stbi_image_free(data);
-            loaded = true;
+            loaded = false;
+            return false;
         }
+        texture = SDL_CreateTextureFromSurface(renderer, image);
+        stbi_image_free(data);
+        loaded = true;
+    }
 
-        bool load(void* data, size_t bytesPerPixel, int width, int height, SDL_Renderer* renderer)
+    bool load(void* data, size_t bytesPerPixel, int width, int height, SDL_Renderer* renderer)
+    {
+        if(loaded)
         {
-            if(loaded)
+            SDL_DestroyTexture(texture);
+            SDL_FreeSurface(image);
+            /*if(image)
             {
-                SDL_DestroyTexture(texture);
-                SDL_FreeSurface(image);
-                /*if(image)
-                {
-                    ((SDL_Surface_Wrapper*)(image))->~SDL_Surface_Wrapper();
-                }*/
-            }
-            if(data == 0)
-            {
-                loaded = false;
-                return false;
-            }
-            Uint32 rmask, gmask, bmask, amask;
-
-            #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-            int shift = (req_format == STBI_rgb) ? 8 : 0;
-            rmask = 0xff000000 >> shift;
-            gmask = 0x00ff0000 >> shift;
-            bmask = 0x0000ff00 >> shift;
-            amask = 0x000000ff >> shift;
-            #else // little endian, like x86
-            rmask = 0x000000ff;
-            gmask = 0x0000ff00;
-            bmask = 0x00ff0000;
-            amask = (bytesPerPixel == STBI_rgb) ? 0 : 0xff000000;
-            #endif
-            image = SDL_CreateRGBSurfaceFrom((void*)data, width, height, bytesPerPixel*8, bytesPerPixel*width, rmask, gmask, bmask, amask);
-            if (image == 0) {
-                SDL_Log("Creating surface failed: %s", SDL_GetError());
-                stbi_image_free(data);
-                loaded = false;
-                return false;
-            }
-            texture = SDL_CreateTextureFromSurface(renderer, image);
-            return true;
+                ((SDL_Surface_Wrapper*)(image))->~SDL_Surface_Wrapper();
+            }*/
         }
-
-        void getImageDimensions(int* width, int* hight)
+        if(data == 0)
         {
-            *width = image->w;
-            *hight = image->h;
+            loaded = false;
+            return false;
         }
+        Uint32 rmask, gmask, bmask, amask;
 
-        void setBorder(RGBA color, int size = 1)
+        #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+        int shift = (req_format == STBI_rgb) ? 8 : 0;
+        rmask = 0xff000000 >> shift;
+        gmask = 0x00ff0000 >> shift;
+        bmask = 0x0000ff00 >> shift;
+        amask = 0x000000ff >> shift;
+        #else // little endian, like x86
+        rmask = 0x000000ff;
+        gmask = 0x0000ff00;
+        bmask = 0x00ff0000;
+        amask = (bytesPerPixel == STBI_rgb) ? 0 : 0xff000000;
+        #endif
+        image = SDL_CreateRGBSurfaceFrom((void*)data, width, height, bytesPerPixel*8, bytesPerPixel*width, rmask, gmask, bmask, amask);
+        if (image == 0) {
+            SDL_Log("Creating surface failed: %s", SDL_GetError());
+            stbi_image_free(data);
+            loaded = false;
+            return false;
+        }
+        texture = SDL_CreateTextureFromSurface(renderer, image);
+        return true;
+    }
+
+    void getImageDimensions(int* width, int* hight)
+    {
+        *width = image->w;
+        *hight = image->h;
+    }
+
+    void setBorder(RGBA color, int size = 1)
+    {
+        border = color;
+        borderSize = size;
+    }
+
+    void setPosition(int x, int y)
+    {
+        box.x = x;
+        box.y = y;
+    }
+
+    void setSize(int width, int hight)
+    {
+        box.w = width;
+        box.h = hight;
+    }
+
+    void setFitRules(bool fitParent, bool fitBox = true, bool fixedAspectRatio = true, UIComponent* parentSet = 0)
+    {
+        if(parentSet)
         {
-            border = color;
-            borderSize = size;
+            setParent(parentSet);
         }
+        this->fitParent = fitParent;
+        this->fixedAspectRatio = fixedAspectRatio;
+        this->fitBox = fitBox;
+    }
 
-        void setPosition(int x, int y)
-        {
-            box.x = x;
-            box.y = y;
-        }
+    unsigned int getBorderSize()
+    {
+        return borderSize;
+    }
 
-        void setSize(int width, int hight)
-        {
-            box.w = width;
-            box.h = hight;
-        }
+    SDL_Rect& getRect()
+    {
+        return box;
+    }
 
-        void setFitRules(bool fitParent, bool fitBox = true, bool fixedAspectRatio = true, UIComponent* parentSet = 0)
-        {
-            if(parentSet)
-            {
-                setParent(parentSet);
-            }
-            this->fitParent = fitParent;
-            this->fixedAspectRatio = fixedAspectRatio;
-            this->fitBox = fitBox;
-        }
+    void setOnLeftClick(void (*event)(void** parameters))
+    {
+        onLeftClick = (void*)(event);
+    }
 
-        unsigned int getBorderSize()
-        {
-            return borderSize;
-        }
+    void setOnRightClick(void (*event)(void** parameters))
+    {
+        onRightClick = (void*)(event);
+    }
 
-        SDL_Rect& getRect()
-        {
-            return box;
-        }
+    UIComponent* getParentWhenSet()
+    {
+        return optionalParent;
+    }
 
-        void setOnLeftClick(void (*event)(void** parameters))
-        {
-            onLeftClick = (void*)(event);
-        }
+    void setParent(UIComponent* parent)
+    {
+        optionalParent = parent;
+    }
 
-        void setOnRightClick(void (*event)(void** parameters))
-        {
-            onRightClick = (void*)(event);
-        }
+    void* getOnLeftClick()
+    {
+        return onLeftClick;
+    }
 
-        UIComponent* getParentWhenSet()
-        {
-            return optionalParent;
-        }
+    void* getOnRightClick()
+    {
+        return onRightClick;
+    }
 
-        void setParent(UIComponent* parent)
-        {
-            optionalParent = parent;
-        }
-
-        void* getOnLeftClick()
-        {
-            return onLeftClick;
-        }
-
-        void* getOnRightClick()
-        {
-            return onRightClick;
-        }
-
-    };
-
-}
-
+};
 

@@ -1,143 +1,136 @@
 
-namespace LGUI
+class List: public UIComponent
 {
+    SDL_Rect box;
+    RGBA fill;
+    RGBA border;
+    int borderSize = 1;
+    void* onLeftClick;
+    void* onRightClick;
+    UIComponent* optionalParent;
 
 
-    class List: public UIComponent
+    std::vector<UIComponent*> elements;
+
+
+    void setElementsPositions()
     {
-        SDL_Rect box;
-        RGBA fill;
-        RGBA border;
-        int borderSize = 1;
-        void* onLeftClick;
-        void* onRightClick;
-        UIComponent* optionalParent;
 
+        int midX = box.x + 5;
+        int midY = box.h/(1+elements.size());
 
-        std::vector<UIComponent*> elements;
-
-
-        void setElementsPositions()
+        for(int i = 0; i < elements.size(); i++)
         {
-
-            int midX = box.x + 5;
-            int midY = box.h/(1+elements.size());
-
-            for(int i = 0; i < elements.size(); i++)
-            {
-                elements.at(i)->setPosition(midX, midY*(i+1) + box.y);
-            }
-
-
+            elements.at(i)->setPosition(midX, midY*(i+1) + box.y);
         }
 
-        public:
 
-        List(List* other)
-        {
+    }
 
-        }
+    public:
 
-        List(List& other)
-        {
+    List(List* other)
+    {
 
-        }
+    }
 
-        List(int x, int y, int width, int hight, RGBA colorFill, RGBA colorBorder, Window* window, UIComponent** elementsListNullTerminated);
+    List(List& other)
+    {
 
-        void push(UIComponent* element)
-        {
-            elements.push_back(element);
-            setElementsPositions();
-        }
+    }
 
-        void pop()
-        {
-            elements.pop_back();
-            setElementsPositions();
-        }
+    List(int x, int y, int width, int hight, RGBA colorFill, RGBA colorBorder, Window* window, UIComponent** elementsListNullTerminated);
 
-        void remove(unsigned int position)
-        {
-            elements.erase(elements.begin() + position);
-            setElementsPositions();
-        }
+    void push(UIComponent* element)
+    {
+        elements.push_back(element);
+        setElementsPositions();
+    }
 
-        SDL_Rect& getPosition() override
-        {
-            return box;
-        }
+    void pop()
+    {
+        elements.pop_back();
+        setElementsPositions();
+    }
 
-        void setPosition(int x, int y) override
-        {
-            box.x = x;
-            box.y = y;
-            setElementsPositions();
-        }
+    void remove(unsigned int position)
+    {
+        elements.erase(elements.begin() + position);
+        setElementsPositions();
+    }
 
-        UIComponent* at(unsigned int position)
-        {
-            return elements.at(position);
-        }
+    SDL_Rect& getPosition() override
+    {
+        return box;
+    }
 
-        bool update(Window* event) override;
+    void setPosition(int x, int y) override
+    {
+        box.x = x;
+        box.y = y;
+        setElementsPositions();
+    }
 
-        bool update(Window* window, SDL_Event& event) override;
+    UIComponent* at(unsigned int position)
+    {
+        return elements.at(position);
+    }
 
-        bool hasPosition() override
-        {
-            return true;
-        }
+    bool update(Window* event) override;
 
-        void setBackground(RGBA color)
-        {
-            fill = color;
-        }
+    bool update(Window* window, SDL_Event& event) override;
 
-        void setBorder(RGBA color, int size = 1)
-        {
-            border = color;
-            borderSize = size;
-        }
+    bool hasPosition() override
+    {
+        return true;
+    }
 
-        void setPosition(int x, int y, SDL_Renderer* renderer)
-        {
-            box.x = x;
-            box.y = y;
-        }
+    void setBackground(RGBA color)
+    {
+        fill = color;
+    }
 
-        unsigned int getBorderSize()
-        {
-            return borderSize;
-        }
+    void setBorder(RGBA color, int size = 1)
+    {
+        border = color;
+        borderSize = size;
+    }
 
-        SDL_Rect& getRect()
-        {
-            return box;
-        }
+    void setPosition(int x, int y, SDL_Renderer* renderer)
+    {
+        box.x = x;
+        box.y = y;
+    }
 
-        void setOnLeftClick(void (*event)(void** parameters))
-        {
-            onLeftClick = (void*)(event);
-        }
+    unsigned int getBorderSize()
+    {
+        return borderSize;
+    }
 
-        void setOnRightClick(void (*event)(void** parameters))
-        {
-            onRightClick = (void*)(event);
-        }
+    SDL_Rect& getRect()
+    {
+        return box;
+    }
 
-        UIComponent* getParentWhenSet()
-        {
-            return optionalParent;
-        }
+    void setOnLeftClick(void (*event)(void** parameters))
+    {
+        onLeftClick = (void*)(event);
+    }
 
-        void setParent(UIComponent* parent)
-        {
-            optionalParent = parent;
-        }
+    void setOnRightClick(void (*event)(void** parameters))
+    {
+        onRightClick = (void*)(event);
+    }
 
-    };
+    UIComponent* getParentWhenSet()
+    {
+        return optionalParent;
+    }
 
-}
+    void setParent(UIComponent* parent)
+    {
+        optionalParent = parent;
+    }
 
+};
 

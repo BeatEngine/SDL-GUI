@@ -161,10 +161,11 @@ int main(int args, char** arg)
     menuContext->addEntrie("Nexit", &window, contextOnExit);
 
     LGUI::ContextMenu* contextMenu = new LGUI::ContextMenu(0, 0, 9999, 9999, menuContext, &window);
+    contextMenu->setLayer(2);
 
     LGUI::Sprite* image1 = new LGUI::Sprite(450,100,500,500, LGUI::RGBA(0, 0, 0, 255), &window, "Components.png");
-
     image1->setFitRules(true);
+    image1->setLayer(0);
 
     window.addComponent(container);
 

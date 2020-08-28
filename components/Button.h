@@ -1,126 +1,123 @@
 
-namespace LGUI
+
+class Button: public UIComponent
 {
 
+    SDL_Rect box;
+    Text text;
+    RGBA fill;
+    RGBA border;
 
-    class Button: public UIComponent
+    int borderSize = 1;
+
+    void* onLeftClick;
+    void* onRightClick;
+    UIComponent* optionalParent;
+    public:
+
+    Button(Button* other)
     {
 
-        SDL_Rect box;
-        Text text;
-        RGBA fill;
-        RGBA border;
+    }
 
-        int borderSize = 1;
+    Button(Button& other)
+    {
 
-        void* onLeftClick;
-        void* onRightClick;
-        UIComponent* optionalParent;
-        public:
+    }
 
-        Button(Button* other)
-        {
+    Button(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
 
-        }
+    bool update(Window* event) override;
 
-        Button(Button& other)
-        {
+    bool update(Window* window, SDL_Event& event) override;
 
-        }
+    void setText(std::string& text, SDL_Renderer* renderer, int fontSize = -1)
+    {
+        this->text.setText(text, renderer, fontSize);
+    }
 
-        Button(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
+    int getTextSize()
+    {
+        return text.getFontSize();
+    }
 
-        bool update(Window* event) override;
+    void setTextColor(RGBA color, int fontSize, SDL_Renderer* renderer)
+    {
+        text.setColor(color, fontSize, renderer);
+    }
 
-        bool update(Window* window, SDL_Event& event) override;
+    void setBackground(RGBA color)
+    {
+        fill = color;
+    }
 
-        void setText(std::string& text, SDL_Renderer* renderer, int fontSize = -1)
-        {
-            this->text.setText(text, renderer, fontSize);
-        }
+    void setBorder(RGBA color, int size = 1)
+    {
+        border = color;
+        borderSize = size;
+    }
 
-        int getTextSize()
-        {
-            return text.getFontSize();
-        }
+    void setPosition(int x, int y)
+    {
+        box.x = x;
+        box.y = y;
+        text.setPositionCenter(x + box.w/2, y + box.h/2);
+    }
 
-        void setTextColor(RGBA color, int fontSize, SDL_Renderer* renderer)
-        {
-            text.setColor(color, fontSize, renderer);
-        }
+    void setSize(int width, int hight)
+    {
+        box.w = width;
+        box.h = hight;
+        text.setPositionCenter(box.x + box.w/2, box.y + box.h/2);
+    }
 
-        void setBackground(RGBA color)
-        {
-            fill = color;
-        }
+    unsigned int getBorderSize()
+    {
+        return borderSize;
+    }
 
-        void setBorder(RGBA color, int size = 1)
-        {
-            border = color;
-            borderSize = size;
-        }
+    SDL_Rect& getRect()
+    {
+        return box;
+    }
 
-        void setPosition(int x, int y)
-        {
-            box.x = x;
-            box.y = y;
-            text.setPositionCenter(x + box.w/2, y + box.h/2);
-        }
+    std::string getText()
+    {
+        return this->text.getText();
+    }
 
-        void setSize(int width, int hight)
-        {
-            box.w = width;
-            box.h = hight;
-            text.setPositionCenter(box.x + box.w/2, box.y + box.h/2);
-        }
+    void setOnLeftClick(void (*event)(void** parameters))
+    {
+        onLeftClick = (void*)(event);
+    }
 
-        unsigned int getBorderSize()
-        {
-            return borderSize;
-        }
+    void setOnRightClick(void (*event)(void** parameters))
+    {
+        onRightClick = (void*)(event);
+    }
 
-        SDL_Rect& getRect()
-        {
-            return box;
-        }
+    UIComponent* getParentWhenSet()
+    {
+        return optionalParent;
+    }
 
-        std::string getText()
-        {
-            return this->text.getText();
-        }
+    void setParent(UIComponent* parent)
+    {
+        optionalParent = parent;
+    }
 
-        void setOnLeftClick(void (*event)(void** parameters))
-        {
-            onLeftClick = (void*)(event);
-        }
+    void* getOnLeftClick()
+    {
+        return onLeftClick;
+    }
 
-        void setOnRightClick(void (*event)(void** parameters))
-        {
-            onRightClick = (void*)(event);
-        }
+    void* getOnRightClick()
+    {
+        return onRightClick;
+    }
 
-        UIComponent* getParentWhenSet()
-        {
-            return optionalParent;
-        }
+};
 
-        void setParent(UIComponent* parent)
-        {
-            optionalParent = parent;
-        }
 
-        void* getOnLeftClick()
-        {
-            return onLeftClick;
-        }
-
-        void* getOnRightClick()
-        {
-            return onRightClick;
-        }
-
-    };
-
-}
 
 
