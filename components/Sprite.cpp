@@ -22,13 +22,13 @@ namespace LGUI
 
     void Sprite::setPosition(int x, int y, Window* window = 0)
     {
-        if(x < 0)
+        if(x <= 0)
         {
-            x = 0;
+            x = 1;
         }
-        if(y < 0)
+        if(y <= 0)
         {
-            y = 0;
+            y = 1;
         }
         if(window)
         {
@@ -42,10 +42,14 @@ namespace LGUI
             }
             else if(window)
             {
-                /*if(y - tmp.h*(tmp.h/(float)box.h) >= tmp.h)
+                if(y + tmp.h >= window->getRect().h)
                 {
-                    y = window->getRect().h - (tmp.h + tmp.h*(tmp.h/(float)box.h));
-                }*/
+                    y = window->getRect().h - tmp.h - 1;
+                }
+                if(x + tmp.w >= window->getRect().w)
+                {
+                    x = window->getRect().w - tmp.w - 1;
+                }
             }
         }
         box.x = x;
@@ -54,7 +58,7 @@ namespace LGUI
 
     SDL_Rect Sprite::getPositionScaled(Window* window)
     {
-        SDL_Rect tmp;
+        SDL_Rect tmp = box;
         if(!fitBox)
         {
             tmp.w = image->w;
