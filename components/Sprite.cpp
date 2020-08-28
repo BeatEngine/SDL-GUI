@@ -46,9 +46,9 @@ namespace LGUI
                 {
                     y = window->getRect().h - tmp.h - 1;
                 }
-                if(x + tmp.w >= window->getRect().w)
+                if(x + box.w >= window->getRect().w)
                 {
-                    x = window->getRect().w - tmp.w - 1;
+                    x = window->getRect().w - box.w - 1;
                 }
             }
         }
