@@ -68,14 +68,27 @@ class InputBox: public UIComponent
 
         void setText(std::string& text, SDL_Renderer* renderer, int fontSize = -1)
         {
-            
-            while(text.length() > 0 && box.w-getTextSize() < text.length()*getTextSize()/2.150)
+            textPart = "";
+            int tw = 0;
+            int th = 0;
+            if(fontSize == -1)
+            {
+                fontSize = this->text.getFontSize();
+            }
+            TTF_Font* font = TTF_OpenFont(this->text.getFontPath().c_str(), fontSize);
+            TTF_SizeText(font, text.c_str(), &tw, &th);
+            while(text.length() > 0 && tw > box.w - fontSize*(2/3.0f))
             {
                 char tmp[2] = {0};
                 tmp[0] = text.at(0);
                 textPart.append(tmp, 1);
-                text.erase(text.begin());
+                text.erase(0, 1);
+                if(TTF_SizeText(font, std::string(text).c_str(), &tw, &th) != 0)
+                {
+                    printf("%s\n", SDL_GetError());
+                }
             }
+            TTF_CloseFont(font);
             this->text.setText(text, renderer, fontSize);
         }
 
