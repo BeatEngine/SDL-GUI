@@ -1,4 +1,4 @@
-
+#include <math.h>
 
 void renderDrawCircle(SDL_Renderer* renderer, int x0, int y0, float radius, float thickness)
 {
