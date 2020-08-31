@@ -1,38 +1,5 @@
 # SDL-GUI
 SDL 2 GUI Project.
-
-Build:
-
-cd SDL2-2.0.12
-
-sudo apt install xorg-dev (REQUIED FOR UBUNTU)
-
-./configure; make;
-
-sudo make install
-
-cd ..
-
-cd SDL2_ttf-2.0.15/external/freetype-2.9.1/
-
-./configure; make;
-
-sudo make install
-
-cd ..
-
-cd ..
-
-./configure; make;
-
-sudo make install
-
-sudo ldconfig (ubuntu)
-
-cd ..
-
-g++ SDLlightGUI.cpp -oSDLlightGUI
-
 <html>
   <h2>Features</h2>
   <h3>Button</h3>
@@ -45,5 +12,14 @@ g++ SDLlightGUI.cpp -oSDLlightGUI
   <h3>MenuList & ContextMenu</h3>
   <h3>Progressbar (rounded)</h3>
   <h3>Sprites (Images (with events))</h3>
+  
+  
+  <h3>Build:</h3>
+  <h4>sudo apt install xorg-dev (REQUIED FOR UBUNTU)</h4>
+  <h4>cd SDL-GUI</h4>
+  <h4>Linux: ./compile.sh</h4>
+  <h4>Windows: compile.bat</h4>
+  
 </html>
+
 
