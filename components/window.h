@@ -11,6 +11,7 @@ namespace LGUI
         std::vector<UIComponent*> components;
         unsigned long framedelay;
         clock_t startedAt;
+        LGUI::RGBA backgroundColor;
         public:
 
 
@@ -24,17 +25,32 @@ namespace LGUI
             return window;
         }
 
-        Window(std::string& title, int width, int hight, int fps = 60)
+        Window(std::string& title, int width, int hight, int fps = 60, bool transparent = false)
         {
             if (SDL_Init(SDL_INIT_EVERYTHING) != 0) { 
                 printf("Error initializing SDL: %s\n", SDL_GetError()); 
             }
             TTF_Init();
 
-            window = SDL_CreateWindow(title.c_str(), 
-                                       SDL_WINDOWPOS_CENTERED, 
-                                       SDL_WINDOWPOS_CENTERED, 
-                                       width, hight, 0); 
+            /*if(transparent)
+            {
+                window = SDL_CreateShapedWindow(title.c_str(), 
+                                        SDL_WINDOWPOS_CENTERED, 
+                                        SDL_WINDOWPOS_CENTERED, 
+                                        width, hight, 0);
+            }
+            else
+            {*/
+                window = SDL_CreateWindow(title.c_str(), 
+                                        SDL_WINDOWPOS_CENTERED, 
+                                        SDL_WINDOWPOS_CENTERED, 
+                                        width, hight, 0); 
+            //}
+            
+            if(transparent)
+            {
+                SDL_SetWindowOpacity(window, 0);
+            }
             renderer = SDL_CreateRenderer(window, -1, 0);
             framedelay = 1000/fps;
             setColor(255, 255, 255, 255);
@@ -159,6 +175,11 @@ namespace LGUI
             SDL_RenderClear(renderer);
         }
 
+        void setBackgroundColor(RGBA bgColor)
+        {
+            backgroundColor = bgColor;
+        }
+
 
         void updateScreen()
         {
@@ -175,7 +196,7 @@ namespace LGUI
         bool update()
         {
             bool refresh = false;
-            setColor(RGBA(255,255,255,255));
+            setColor(backgroundColor);
             clearBackground();
             
             if (SDL_PollEvent(&event))
