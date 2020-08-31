@@ -63,7 +63,7 @@ class Text: public UIComponent
 
     bool update(Window* window, SDL_Event& event)
     {
-        update(window);
+        return update(window);
     }
 
     bool hasPosition() override

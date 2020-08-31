@@ -13,6 +13,7 @@ namespace LGUI
         {
             return fields.at(row).getText();
         }
+        return "";
     }
 
     int TableColumn::getWidth()
@@ -69,6 +70,7 @@ namespace LGUI
             }
             return true;
         }
+        return false;
     }
 
     bool TableColumn::update(Window* window, SDL_Event& event)

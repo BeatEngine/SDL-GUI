@@ -23,13 +23,7 @@ class MenuEntriy: public UIComponent
         onRightClick = 0;
     }
 
-    ~MenuEntriy()
-    {
-        if(subMenu)
-        {
-            delete subMenu;
-        }
-    }
+    ~MenuEntriy();
 
     MenuEntriy(int x, int y, int width, int hight, std::string text, Window* window, int textSize, MenuList* setSubMenu);
 

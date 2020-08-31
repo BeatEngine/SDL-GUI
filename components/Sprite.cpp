@@ -20,7 +20,7 @@ namespace LGUI
         }
     }
 
-    void Sprite::setPosition(int x, int y, Window* window = 0)
+    void Sprite::setPosition(int x, int y,bool center = false, Window* window = 0)
     {
         if(x <= 0)
         {
@@ -52,9 +52,19 @@ namespace LGUI
                 }
             }
         }
-        box.x = x;
-        box.y = y;
+        if(!center)
+        {
+            box.x = x+box.w/2;
+            box.y = y+box.h/2;
+        }
+        else
+        {
+            box.x = x;
+            box.y = y;
+        }
     }
+
+
 
     SDL_Rect Sprite::getPositionScaled(Window* window)
     {

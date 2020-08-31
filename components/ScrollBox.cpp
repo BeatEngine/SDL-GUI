@@ -49,8 +49,11 @@ namespace LGUI
         {
             return false;
         }
-        window->setColor(fill);
-        SDL_RenderFillRect(window->getRenderer(), &box);
+        if(fill.a > 0)
+        {
+            window->setColor(fill);
+            SDL_RenderFillRect(window->getRenderer(), &box);
+        }
         
 
         for(int i = 0; i < components.size(); i++)
@@ -98,8 +101,11 @@ namespace LGUI
     {
         if(!isHidden())
         {
-            window->setColor(fill);
-            SDL_RenderFillRect(window->getRenderer(), &box);
+            if(fill.a > 0)
+            {
+                window->setColor(fill);
+                SDL_RenderFillRect(window->getRenderer(), &box);
+            }
         }
         for(int i = 0; i < components.size(); i++)
         {

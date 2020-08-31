@@ -127,6 +127,7 @@ class Sprite: public UIComponent
         texture = SDL_CreateTextureFromSurface(renderer, image);
         stbi_image_free(data);
         loaded = true;
+        return true;
     }
 
     bool load(void* data, size_t bytesPerPixel, int width, int height, SDL_Renderer* renderer)
@@ -196,7 +197,7 @@ class Sprite: public UIComponent
         box.y = y;
     }
 
-    void setPosition(int x, int y, Window* window);
+    void setPosition(int x, int y, bool center,  Window* window);
 
     void setSize(int width, int hight)
     {

@@ -61,7 +61,7 @@ namespace LGUI
         {
             components.push_back(component);
             std::sort (components.begin(), components.end(), UIComponent::compareLayer);
-            
+            int dbg;
             //update();
             //updateScreen();
         }

@@ -180,7 +180,7 @@ class Table: public UIComponent
         }
     }
 
-    std::string setText(int row, int column, std::string text, SDL_Renderer* renderer)
+    void setText(int row, int column, std::string text, SDL_Renderer* renderer)
     {
         if(column < columns.size())
         {
