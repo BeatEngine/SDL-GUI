@@ -43,5 +43,6 @@ g++ SDLlightGUI.cpp -oSDLlightGUI
   <h3>List</h3>
   <h3>SchrollBox (Container)</h3>
   <h3>MenuList & ContextMenu</h3>
+  <h3>Sprites (Images (with events))</h3>
 </html>
 
