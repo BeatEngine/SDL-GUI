@@ -44,6 +44,11 @@ class InputBox: public UIComponent
         setText(txt, renderer);
     }
 
+    SDL_Rect& getTextRect()
+    {
+        return text.getPosition();
+    }
+
     public:
 
     bool isSelected()
@@ -54,6 +59,11 @@ class InputBox: public UIComponent
     void enableLineBreak(bool allowed)
     {
         lineBreak = allowed;
+    }
+
+    SDL_Rect& getRect()
+    {
+        return box;
     }
 
     InputBox(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);

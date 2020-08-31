@@ -26,14 +26,33 @@ class Text: public UIComponent
 
     Text(const Text& other)
     {
-        *this = other;
-        /*fontPath = other.fontPath;
+        //*this = other;
+        fontPath = other.fontPath;
         text = other.text;
         foregroundColor = other.foregroundColor;
         backgroundColor = other.backgroundColor;
         position = other.position;
         sizePT = other.sizePT;
-        textSurface = SDL_CreateRGBSurfaceWithFormatFrom(other.textSurface->pixels, other.textSurface->w, other.textSurface->h, other.textSurface->format->BytesPerPixel*8, other.textSurface->format->BytesPerPixel*other.textSurface->w, other.textSurface->format->format);*/
+        textSurface = 0;
+        texture = 0;
+        if(other.textSurface)
+        {
+            int form = other.textSurface->pitch/other.textSurface->w;
+            Uint32 rmask, gmask, bmask, amask;
+            #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+            int shift = (req_format == STBI_rgb) ? 8 : 0;
+            rmask = 0xff000000 >> shift;
+            gmask = 0x00ff0000 >> shift;
+            bmask = 0x0000ff00 >> shift;
+            amask = 0x000000ff >> shift;
+            #else // little endian, like x86
+            rmask = 0x000000ff;
+            gmask = 0x0000ff00;
+            bmask = 0x00ff0000;
+            amask = (form == STBI_rgb) ? 0 : 0xff000000;
+            #endif
+            textSurface = SDL_CreateRGBSurfaceFrom(other.textSurface->pixels, other.textSurface->w, other.textSurface->h, form*8, other.textSurface->w*form, rmask, gmask, bmask,amask);
+        }
     }
 
     Text(std::string fontFilePath ,int textSize, std::string text, int x, int y, int w, int h, Window* window);
@@ -66,7 +85,29 @@ class Text: public UIComponent
         backgroundColor.a = other.backgroundColor.a;
         //textSurface = other.textSurface;
         textSurface = 0;
+        texture = 0;
+        position = other.position;
         if(other.textSurface != 0)
+        {
+            int tmpChannels = (other.textSurface->pitch)/(other.textSurface->w);
+            Uint32 rmask, gmask, bmask, amask;
+
+            #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+                int shift = (req_format == STBI_rgb) ? 8 : 0;
+                rmask = 0xff000000 >> shift;
+                gmask = 0x00ff0000 >> shift;
+                bmask = 0x0000ff00 >> shift;
+                amask = 0x000000ff >> shift;
+            #else // little endian, like x86
+                rmask = 0x000000ff;
+                gmask = 0x0000ff00;
+                bmask = 0x00ff0000;
+                amask = (tmpChannels == STBI_rgb) ? 0 : 0xff000000;
+            #endif
+            textSurface = SDL_CreateRGBSurfaceFrom(other.textSurface->pixels, other.textSurface->w, other.textSurface->h, tmpChannels*8, other.textSurface->pitch, rmask, gmask, bmask, amask);
+        }
+
+        /*if(other.textSurface != 0)
         {
             textSurface = copySurface(other.textSurface);
         }
@@ -75,7 +116,7 @@ class Text: public UIComponent
         if(other.texture != 0)
         {
             texture = copyTexture(other.texture);
-        }
+        }*/
         sizePT = other.sizePT;
     }
 
@@ -106,8 +147,7 @@ class Text: public UIComponent
         
         if(font)
         {
-            //SDL_FreeSurface(textSurface);
-            ((SDL_Surface_Wrapper*)textSurface)->~SDL_Surface_Wrapper();
+            SDL_FreeSurface(textSurface);
             TTF_SizeText(font, text.c_str(), &position.w, &position.h);
             textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
             //SDL_DestroyTexture(texture);
@@ -135,8 +175,7 @@ class Text: public UIComponent
         TTF_Font* font = TTF_OpenFont(fontPath.c_str(), sizePT);
         if(font)
         {
-            //SDL_FreeSurface(textSurface);
-            ((SDL_Surface_Wrapper*)(textSurface))->~SDL_Surface_Wrapper();
+            SDL_FreeSurface(textSurface);
             TTF_SizeText(font, text.c_str(), &position.w, &position.h);
             textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
             //SDL_DestroyTexture(texture);

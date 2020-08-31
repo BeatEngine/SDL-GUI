@@ -1,3 +1,4 @@
+#include <SDL2/SDL.h>
 
 class SDL_SW_YUVTexture_Wrapper
     {

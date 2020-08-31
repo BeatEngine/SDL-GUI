@@ -4,6 +4,10 @@ namespace LGUI
 
     bool Text::update(Window* window)
     {
+        if(textSurface != 0 && texture == 0)
+        {
+            texture = SDL_CreateTextureFromSurface(window->getRenderer(), textSurface);
+        }
         if(text.length()>0 && !isHidden())
         {
             if(rectIsInBorders(position))
@@ -48,6 +52,7 @@ namespace LGUI
         textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
         texture = SDL_CreateTextureFromSurface(window->getRenderer(), textSurface);
         TTF_CloseFont(font);
+        update(window);
     }
 
     Text::Text(std::string fontFilePath ,int textSize, std::string text, int x, int y, int w, int h, Window* window)

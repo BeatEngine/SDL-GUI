@@ -15,6 +15,7 @@ namespace LGUI
     #include "MenuList.h"
     #include "ContextMenu.h"
     #include "ProgressBar.h"
+    #include "Table.h"
 
 
 
