@@ -1,6 +1,5 @@
-# SDL-GUI
+# SDL 2 GUI Project.
 <html>
-  <h1>SDL 2 GUI Project.</h1>
   <h2>Features</h2>
   <h3>Button</h3>
   <h3>InputBox</h3>
