@@ -187,11 +187,19 @@ int main(int args, char** arg)
     image1->setLayer(0);
     image1->setOnMouseMove(imageOnMouseMove);
 
+    LGUI::Table* table1 = new LGUI::Table(400, 600, LGUI::RGBA(240, 240, 240, 255), LGUI::RGBA(0, 0, 0, 255), &window);
+    table1->addColumn("Name");
+    table1->addColumn("Size");
+    table1->addRows(2);
+
     window.addComponent(container);
 
     window.addComponent(contextMenu);
 
     window.addComponent(image1);
+
+    window.addComponent(table1);
+
     while (window.update()) //window main loop
     {
         progressScroll->setProgress(scroll1->getScrollY(), window.getRenderer());
