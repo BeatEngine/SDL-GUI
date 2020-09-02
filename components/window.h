@@ -53,7 +53,7 @@ namespace LGUI
             }
             renderer = SDL_CreateRenderer(window, -1, 0);
             framedelay = 1000/fps;
-            setColor(255, 255, 255, 255);
+            setBackgroundColor(RGBA(255, 255, 255, 255));
             clearBackground();
             updateScreen();
             startedAt = clock();

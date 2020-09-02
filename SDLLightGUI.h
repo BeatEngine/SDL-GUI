@@ -28,7 +28,6 @@
 #include <string>
 
 
-#include "SDLwrapper.h"
 #include "components/gui.h"
 #include "components/window.h"
 #include "components/gui.cpp"

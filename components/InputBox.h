@@ -74,6 +74,10 @@ class InputBox: public UIComponent
 
     void setText(std::string& text, SDL_Renderer* renderer, int fontSize = -1)
     {
+        if(text.length() == 0)
+        {
+            text = " ";
+        }
         textPart = "";
         int tw = 0;
         int th = 0;
