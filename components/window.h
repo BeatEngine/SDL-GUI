@@ -86,7 +86,18 @@ namespace LGUI
         {
             for(int i = 0; i < components.size(); i++)
             {
-                if(components.at(i)->getId() == id)
+                if(typeid(*components.at(i)) == typeid(RadioGroup))
+                {
+                    std::vector<RadioBox*> inner = ((RadioGroup*)components.at(i))->getControlls();
+                    for(int u = 0; u < inner.size(); u++)
+                    {
+                        if(inner.at(u)->getId() == id)
+                        {
+                            return inner.at(u);
+                        }
+                    }
+                }
+                else if(components.at(i)->getId() == id)
                 {
                     return components.at(i);
                 }
@@ -99,7 +110,18 @@ namespace LGUI
             std::vector<UIComponent*> results;
             for(int i = 0; i < components.size(); i++)
             {
-                if(components.at(i)->rectIsInBorders(area))
+                if(typeid(*components.at(i)) == typeid(RadioGroup))
+                {
+                    std::vector<RadioBox*> inner = ((RadioGroup*)components.at(i))->getControlls();
+                    for(int u = 0; u < inner.size(); u++)
+                    {
+                        if(inner.at(u)->rectIsInBorders(area))
+                        {
+                            results.push_back(inner.at(u));
+                        }
+                    }
+                }
+                else if(components.at(i)->rectIsInBorders(area))
                 {
                     results.push_back(components.at(i));
                 }
