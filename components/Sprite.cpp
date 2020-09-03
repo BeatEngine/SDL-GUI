@@ -108,6 +108,10 @@ namespace LGUI
         {
             return false;
         }
+        if(texture == 0 && loaded)
+        {
+            texture = SDL_CreateTextureFromSurface(window->getRenderer(), image);
+        }
         //SDL_RenderSetScale(window->getRenderer(), box.w/(float)(image->w), box.h/(float)(image->h));
         SDL_Rect tmp = box;
         if(!fitBox)
@@ -172,6 +176,10 @@ namespace LGUI
     bool Sprite::update(Window* window, SDL_Event& event)
     {
         update(window);
+        if(texture == 0 && loaded)
+        {
+            texture = SDL_CreateTextureFromSurface(window->getRenderer(), image);
+        }
         if(isEnabled())
         {
             bool ret = false;

@@ -136,6 +136,12 @@ class ScrollBox: public UIComponent
         return box;
     }
 
+    void setSize(int w, int h)
+    {
+        box.w = w;
+        box.h = h;
+    }
+
     bool hasPosition() override
     {
         return true;

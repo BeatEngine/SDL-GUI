@@ -44,6 +44,46 @@ class Sprite: public UIComponent
 
     Sprite(int x, int y, int width, int hight, RGBA colorBorder, Window* window, std::string loadFromFilePath);
 
+    Sprite(Sprite& other)
+    {
+        *this = other;
+    }
+
+    Sprite(Sprite* other)
+    {
+        *this = *other;
+    }
+
+    void operator=(Sprite& other)
+    {
+        box = other.getRect();
+        border = other.border;
+        borderSize = other.borderSize;
+        filePath = other.filePath;
+        onLeftClick = other.getOnLeftClick();
+        onRightClick = other.getOnRightClick();
+        onMouseEnter = other.getOnMouseEnter();
+        onMouseMove = other.getOnMouseMove();
+        onMouseLeft = other.getOnMouseLeft();
+        mouseInside = other.mouseInside;
+        mouseButtonDown = other.mouseButtonDown;
+        lastMouseX = other.getLastMouseX();
+        lastMouseY = other.getLastMouseY();
+        optionalParent = other.getParentWhenSet();
+        fitParent = other.fitParent;
+        fitBox = other.fitBox;
+        fixedAspectRatio = other.fixedAspectRatio;
+        loaded = false;
+        if(other.image)
+        {
+            int iw = 0;
+            int ih = 0;
+            other.getImageDimensions(&iw, &ih);
+            load(other.image->pixels, other.image->pitch / other.image->w, iw, ih, 0);
+        }
+
+    }
+
     ~Sprite()
     {
         if(loaded)
@@ -167,7 +207,14 @@ class Sprite: public UIComponent
             loaded = false;
             return false;
         }
-        texture = SDL_CreateTextureFromSurface(renderer, image);
+        if(renderer)
+        {
+            texture = SDL_CreateTextureFromSurface(renderer, image);
+        }
+        else
+        {
+            texture = 0;
+        }
         return true;
     }
 

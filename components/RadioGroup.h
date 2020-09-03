@@ -47,6 +47,11 @@ class RadioGroup: public UIComponent
         }
     }
 
+
+    std::vector<RadioBox*>& getControlls()
+    {
+        return controls;
+    }
     
 
     void addRadioBox(RadioBox* box)

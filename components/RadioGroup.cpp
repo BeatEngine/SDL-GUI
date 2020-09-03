@@ -9,21 +9,6 @@ namespace LGUI
         for(int i = 0; i < controls.size(); i++)
         {
             controls.at(i)->update(window);
-            /*if(controls.at(i)->isSelected())
-            {
-                for(int o = 0; o < controls.size(); o++)
-                {
-                    if(i != 0)
-                    {
-                        controls.at(o)->setSelected(false);
-                        if(o > i)
-                        {
-                            controls.at(o)->update(window);
-                        }
-                    }
-                }
-                break;
-            }*/
         }
         return false;
     }
