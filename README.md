@@ -11,7 +11,7 @@
   <h3>MenuList & ContextMenu</h3>
   <h3>Progressbar (rounded)</h3>
   <h3>Sprites (Images (with events))</h3>
-  <img src="https://raw.githubusercontent.com/BeatEngine/SDL-GUI/master/samples/elements.png"></img>
+  <img src="https://raw.githubusercontent.com/BeatEngine/SDL-GUI/master/samples/sampleElements.png"></img>
   
   
   <h3>Build:</h3>
