@@ -66,6 +66,31 @@ class InputBox: public UIComponent
         return box;
     }
 
+    InputBox(InputBox* other)
+    {
+        *this = *other;
+    }
+    InputBox(const InputBox& other)
+    {
+        *this = other;
+    }
+
+    void operator=(const InputBox& other)
+    {
+        box = other.box;
+        text = other.text;
+        fill = other.fill;
+        border = other.border;
+        borderSize = other.borderSize;
+        onLeftClick = 0;
+        onRightClick = 0;
+        selected = false;
+        shift = false;
+        lockShift = false;
+        lineBreak = false;
+        textPart = other.textPart;
+    }
+
     InputBox(int x, int y, int width, int hight, std::string text, RGBA colorFill, RGBA colorBorder, Window* window, int textSize);
 
     bool update(Window* event) override;
@@ -74,10 +99,6 @@ class InputBox: public UIComponent
 
     void setText(std::string& text, SDL_Renderer* renderer, int fontSize = -1)
     {
-        if(text.length() == 0)
-        {
-            text = " ";
-        }
         textPart = "";
         int tw = 0;
         int th = 0;
@@ -85,8 +106,25 @@ class InputBox: public UIComponent
         {
             fontSize = this->text.getFontSize();
         }
-        TTF_Font* font = TTF_OpenFont(this->text.getFontPath().c_str(), fontSize);
+        std::string fontPath = "./Arial.ttf";
+        if(this->text.getFontPath().length() > 0)
+        {
+            fontPath = this->text.getFontPath();
+        }
+        else
+        {
+            this->text.setFontPath(fontPath);
+        }
+        TTF_Font* font = TTF_OpenFont(fontPath.c_str(), fontSize);
         TTF_SizeText(font, text.c_str(), &tw, &th);
+        if(box.w == 0)
+        {
+            box.w = tw + fontSize*(2/3.0f);
+        }
+        if(box.h == 0)
+        {
+            box.h = th;
+        }
         while(text.length() > 0 && tw > box.w - fontSize*(2/3.0f))
         {
             char tmp[2] = {0};
@@ -105,6 +143,13 @@ class InputBox: public UIComponent
     int getTextSize()
     {
         return text.getFontSize();
+    }
+
+    void setPosition(int x, int y)
+    {
+        box.x = x;
+        box.y = y;
+        text.setPositionCenter(box.x + box.w/2,box.y + box.h/2);
     }
 
     void setTextColor(RGBA color, int fontSize, SDL_Renderer* renderer)

@@ -79,8 +79,7 @@ void imageOnMouseMove(void** parameters)
         SDL_Rect pos = sprite->getPosition();
         pos.x += mx;
         pos.y += my;
-        sprite->setPosition(pos.x, pos.y, window);
-        //sprite->setLastCursorPosition(pos.x, pos.y);
+        sprite->setPosition(pos.x, pos.y, true, window);
     }
 }
 
@@ -181,7 +180,7 @@ int main(int args, char** arg)
     LGUI::ContextMenu* contextMenu = new LGUI::ContextMenu(0, 0, 9999, 9999, menuContext, &window);
     contextMenu->setLayer(2);
 
-    LGUI::Sprite* image1 = new LGUI::Sprite(450,100,500,500, LGUI::RGBA(0, 0, 0, 255), &window, "Components.png");
+    LGUI::Sprite* image1 = new LGUI::Sprite(450,100,500,500, LGUI::RGBA(0, 0, 0, 255), &window, "./Components.png");
     image1->setBorder(LGUI::RGBA(0, 0, 0, 255), 1);
     image1->setFitRules(true);
     image1->setLayer(0);
@@ -190,7 +189,13 @@ int main(int args, char** arg)
     LGUI::Table* table1 = new LGUI::Table(400, 600, LGUI::RGBA(240, 240, 240, 255), LGUI::RGBA(0, 0, 0, 255), &window);
     table1->addColumn("Name");
     table1->addColumn("Size");
-    table1->addRows(2);
+    table1->addColumn("Weight");
+    char* dataRow[] = {"Test User", "89", "80"};
+    table1->addRow(dataRow, 3);
+    char* dataRow2[] = {"Master", "1000", "100"};
+    table1->addRow(dataRow2, 3);
+
+    table1->refresh();
 
     window.addComponent(container);
 

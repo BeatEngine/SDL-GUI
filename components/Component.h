@@ -22,7 +22,7 @@ class RGBA
         a = alpha;
     }
 
-    void operator = (RGBA& other)
+    void operator = (const RGBA& other)
     {
         r = other.r;
         g = other.g;

@@ -2,13 +2,13 @@
 class Text: public UIComponent
 {
     
-    std::string fontPath;
+    std::string fontPath = "";
     std::string text;
     SDL_Color foregroundColor;
     SDL_Color backgroundColor;
     SDL_Surface* textSurface;
     SDL_Rect position;
-    SDL_Texture * texture;
+    SDL_Texture * texture = 0;
     int sizePT;
     public:
     Text()
@@ -17,6 +17,10 @@ class Text: public UIComponent
         backgroundColor = { 0, 0, 0, 0};
         textSurface = 0;
         sizePT = 12;
+        position.h = 20;
+        position.w = 100;
+        position.x = 0;
+        position.y = 0;
     }
 
     Text(Text* other)
@@ -64,6 +68,11 @@ class Text: public UIComponent
     bool update(Window* window, SDL_Event& event)
     {
         return update(window);
+    }
+
+    void setFontPath(std::string filePath)
+    {
+        fontPath = filePath;
     }
 
     bool hasPosition() override
@@ -136,6 +145,11 @@ class Text: public UIComponent
     {
         this->text = text;
         //setFont(fontPath, 12);
+        if(text.length() < 1)
+        {
+            this->text = "";
+            text = "  ";
+        }
         if(fontSize < 0)
         {
             fontSize = sizePT;
@@ -148,7 +162,10 @@ class Text: public UIComponent
         if(font)
         {
             SDL_FreeSurface(textSurface);
-            TTF_SizeText(font, text.c_str(), &position.w, &position.h);
+            if(this->text.length()>0)
+            {
+                TTF_SizeText(font, text.c_str(), &position.w, &position.h);
+            }
             textSurface = TTF_RenderText_Blended(font, text.c_str(), foregroundColor);
             //SDL_DestroyTexture(texture);
             texture = SDL_CreateTextureFromSurface(renderer, textSurface);

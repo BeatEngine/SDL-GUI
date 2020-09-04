@@ -1,77 +1,3 @@
-class InputBox;
-class TableColumn: public UIComponent
-{
-    std::vector<InputBox> fields;
-    std::string head = "";
-    int x;
-    int y;
-    int width;
-    RGBA background;
-    RGBA border;
-    int borderSize = 1;
-    public:
-
-    TableColumn()
-    {
-
-    }
-    TableColumn(std::string& name, int x, int y, int width, RGBA colorBackground, RGBA colorBorder,Window* window, int borderSize = 1)
-    {
-        this->borderSize = borderSize;
-        border = colorBorder;
-        background = colorBackground;
-        head = name;
-        this->addRow(name, window, 14);
-        this->x = x;
-        this->y = y;
-        this->width = width;
-    }
-
-    bool update(Window* window)override;
-
-    bool update(Window* window, SDL_Event& event)override;
-
-    void addRow(std::string& text, Window* window, int textSize);
-
-    void addRow(Window* window, int textSize);
-
-    int getWidth();
-
-    int getHight()
-    {
-        int hi = 0;
-        for(int i = 0; i < fields.size(); i++)
-        {
-            hi += fields.at(i).getRect().h;
-        }
-        return hi;
-    }
-
-    void setPosition(int px, int py)
-    {
-        x = px;
-        y = py;
-        for(int i = 0; i < fields.size(); i++)
-        {
-            fields.at(i).setPosition(x, y+20*i);
-        }
-    }
-
-    int getX()
-    {
-        return x;
-    }
-
-    int getY()
-    {
-        return y;
-    }
-
-    std::string getText(int row);
-
-    void setText(int row, std::string& text, SDL_Renderer* renderer, int textSize);
-
-};
 
 class Table: public UIComponent
 {
@@ -84,20 +10,65 @@ class Table: public UIComponent
     UIComponent* optionalParent;
     Window* tableWindow = 0;
 
-    std::vector<TableColumn> columns;
+    std::vector<InputBox> cells;
+    int rows = 0;
+    int columns = 0;
 
     void resize()
     {
-        if(columns.size() > 0)
+        int mw = 0;
+        int mh = 0;
+        int w = 0;
+        int h = 0;
+        int c;
+        for(int r = 0; r <= rows; r++)
         {
-            box.h = columns.at(0).getHight();
+            w = 0;
+            h = 0;
+            for(c = 0; c < columns; c++)
+            {
+                cells[columns*r+c].setPosition(box.x + w, box.y + mh);
+                if(cells[columns*r+c].getRect().h > h)
+                {
+                    h = cells[columns*r+c].getRect().h;
+                }
+                w += cells[columns*r+c].getRect().w;
+            }
+            if(w > mw)
+            {
+                mw = w;
+            }
+            mh += h;
         }
-        int wid = 0;
-        for(int i = 0; i < columns.size(); i++)
+        box.w = mw;
+        box.h = mh;
+        mw = 0;
+        for(c = 0; c < columns; c++)
         {
-            wid += columns.at(i).getWidth();
+            w = 0;
+            for(int r = 0; r <= rows; r++)
+            {
+                if(cells[columns*r+c].getRect().w > w)
+                {
+                    w = cells[columns*r+c].getRect().w;
+                }
+            }
+            for(int r = 0; r <= rows; r++)
+            {
+                if(cells[columns*r+c].getRect().w < w)
+                {
+                    cells[columns*r+c].setPosition(box.x + mw + (w-cells[columns*r+c].getRect().w)/2,cells[columns*r+c].getRect().y);
+                }
+                else
+                {
+                    cells[columns*r+c].setPosition(box.x + mw,cells[columns*r+c].getRect().y);
+                }
+            }
+            mw += w;
         }
-        box.w = wid;
+
+
+
     }
 
     public:
@@ -107,6 +78,18 @@ class Table: public UIComponent
     bool update(Window* event) override;
 
     bool update(Window* window, SDL_Event& event) override;
+
+    void refresh()
+    {
+        int c = 0;
+        for(int i = 0; i < countRows(); i++)
+        {
+            for(c = 0; c < countColumns(); c++)
+            {
+                setText(i, c, getText(i, c));
+            }
+        }
+    }
 
     int getTextSize()
     {
@@ -128,18 +111,27 @@ class Table: public UIComponent
     {
         box.x = x;
         box.y = y;
-        int w = 0;
-        for(int i = 0; i < columns.size(); i++)
+        resize();
+        /*for(int i = 0; i < cells.size(); i++)
         {
-            columns.at(i).setPosition(box.x + w, box.y);
-            w += columns.at(i).getWidth();
-        }
+            cells.at(i).setPosition(box.x + (i % rows)*50, box.y + (i / rows)*20);
+        }*/
+    }
+
+    int countRows()
+    {
+        return rows+1;
+    }
+
+    int countColumns()
+    {
+        return columns;
     }
 
     void setSize(int width, int hight)
     {
-        box.w = width;
-        box.h = hight;
+        //box.w = width;
+        //box.h = hight;
     }
 
     unsigned int getBorderSize()
@@ -149,21 +141,122 @@ class Table: public UIComponent
 
     void addColumn(std::string name)
     {
-        columns.push_back(TableColumn(name, box.x+box.w, box.y, 50, fill, border, tableWindow, borderSize));
+        int p = cells.size();
+        while (p >= columns)
+        {
+            if(p == 0)
+            {
+                cells.insert(cells.begin()+p, InputBox(0, 0, 0, 20, name, fill, border, tableWindow, defaultTextSize));
+                cells[p].setBorder(border, 0);
+            }
+            else if(p % columns == 0)
+            {
+                if(p <= columns)
+                {
+                    cells.insert(cells.begin()+p, InputBox(0, 0, 0, 20, name, fill, border, tableWindow, defaultTextSize));
+                    cells[p].setBorder(border, 0);
+                }
+                else
+                {
+                    cells.insert(cells.begin()+p, InputBox(0, 0, 60, 20, "", fill, border, tableWindow, defaultTextSize));
+                    cells[p].setBorder(border, 0);
+                }
+            }
+            p--;
+        }
+        columns++;
         resize();
-        setPosition(box.x, box.y);
     }
 
-    void addRows(int number)
+    void addRow()
     {
-        while (number > 0)
+        for(int i = 0; i < columns; i++)
         {
-            for(int i = 0; i < columns.size(); i++)
-            {
-                columns.at(i).addRow(tableWindow, defaultTextSize);
-            }
-            number--;
+            cells.push_back(InputBox(0, 0, 60, 20, "", fill, border, tableWindow, defaultTextSize));
         }
+        rows++;
+        resize();
+    }
+
+    void addRow(std::vector<std::string>& row)
+    {
+        for(int i = 0; i < columns; i++)
+        {
+            if(i < row.size())
+            {
+                cells.push_back(InputBox(0, 0, 0, 20, row[i], fill, border, tableWindow, defaultTextSize));
+            }
+            else
+            {
+                cells.push_back(InputBox(0, 0, 60, 20, "", fill, border, tableWindow, defaultTextSize));
+            }
+        }
+        rows++;
+        resize();
+    }
+    void addRow(std::vector<LGUI::InputBox>& row)
+    {
+        for(int i = 0; i < columns; i++)
+        {
+            if(i < row.size())
+            {
+                cells.push_back(InputBox(0, 0, 0, 20, row[i].getText(), fill, border, tableWindow, defaultTextSize));
+            }
+            else
+            {
+                cells.push_back(InputBox(0, 0, 60, 20, "", fill, border, tableWindow, defaultTextSize));
+            }
+        }
+        rows++;
+        resize();
+    }
+    void addRow(std::vector<LGUI::InputBox*>& row)
+    {
+        for(int i = 0; i < columns; i++)
+        {
+            if(i < row.size())
+            {
+                if(row[i])
+                {
+                    cells.push_back(InputBox(0, 0, 60, 20, row[i]->getText(), fill, border, tableWindow, defaultTextSize));
+                }
+                else
+                {
+                    cells.push_back(InputBox(0, 0, 60, 20, "", fill, border, tableWindow, defaultTextSize));
+                }
+            }
+            else
+            {
+                cells.push_back(InputBox(0, 0, 60, 20, "", fill, border, tableWindow, defaultTextSize));
+            }
+        }
+        rows++;
+        resize();
+    }
+    void addRow(char** row, int entries)
+    {
+        for(int i = 0; i < columns; i++)
+        {
+            if(i < entries)
+            {
+                if(row[i])
+                {
+                    cells.push_back(InputBox(0, 0, 60, 20, std::string(row[i]), fill, border, tableWindow, defaultTextSize));
+                    cells.back().setBorder(border, 0);
+                }
+                else
+                {
+                    cells.push_back(InputBox(0, 0, 60, 20, "", fill, border, tableWindow, defaultTextSize));
+                    cells.back().setBorder(border, 0);
+                }
+            }
+            else
+            {
+                cells.push_back(InputBox(0, 0, 60, 20, "", fill, border, tableWindow, defaultTextSize));
+                cells.back().setBorder(border, 0);
+            }
+        }
+        rows++;
         resize();
     }
 
@@ -174,19 +267,14 @@ class Table: public UIComponent
 
     std::string getText(int row, int column)
     {
-        if(column < columns.size())
+        if(row*columns+column < cells.size())
         {
-            return columns.at(column).getText(row);            
+            return cells[row*columns+column].getText();            
         }
+        return "Error: Out of range";
     }
 
-    void setText(int row, int column, std::string text, SDL_Renderer* renderer)
-    {
-        if(column < columns.size())
-        {
-            columns.at(column).setText(row, text, renderer, defaultTextSize);            
-        }
-    }
+    void setText(int row, int column, std::string text);
 
     UIComponent* getParentWhenSet()
     {

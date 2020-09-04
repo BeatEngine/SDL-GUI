@@ -7,7 +7,16 @@ namespace LGUI
         {
             return false;
         }
-        window->setColor(fill);
+        if(selected)
+        {
+            RGBA tmpsc = fill;
+            tmpsc.b /= 1.5;
+            window->setColor(tmpsc);
+        }
+        else
+        {
+            window->setColor(fill);
+        }
         SDL_RenderFillRect(window->getRenderer(), &box);
         window->setColor(border);
         SDL_Rect tmp = box;
@@ -28,6 +37,16 @@ namespace LGUI
         if(!isHidden())
         {
             window->setColor(fill);
+            if(selected)
+            {
+                RGBA tmpsc = fill;
+                tmpsc.b /= 1.5;
+                window->setColor(tmpsc);
+            }
+            else
+            {
+                window->setColor(fill);
+            }
             SDL_RenderFillRect(window->getRenderer(), &box);
             window->setColor(border);
             SDL_Rect tmp = box;
@@ -168,23 +187,17 @@ namespace LGUI
         box.h = hight;
         fill = colorFill;
         border = colorBorder;
-        if(text.length()==0)
-        {
-            this->text = Text("./Arial.ttf", textSize, text, x+5, y+hight/2-(textSize*4/3)/2, 1, textSize*5/4, window);
-        }
-        else
-        {
-            this->text = Text("./Arial.ttf", textSize, text, x+5, y+hight/2-(textSize*4/3)/2, text.size()*textSize/2.150, textSize*5/4, window);
-        }
+        
+        this->setTextColor(RGBA(~fill.r, ~fill.g, ~fill.b, 255), textSize, window->getRenderer());
+        this->text.setPosition(x+5, y+hight/2-(textSize*4/3)/2);
+        this->setText(text, window->getRenderer(), 12);
+        this->update(window);
+        //window->update();
         this->text.setBackground(fill, window->getRenderer());
-        if(box.w == 0)
-        {
-            box.w = this->text.getPosition().w;
-        }
-        if(box.h == 0)
-        {
-            box.h = this->text.getPosition().h;
-        }
+        //this->update(window);
+        //window->update();
+        //this->setText(text, window->getRenderer(), 12);
+        
     }
 
 }

@@ -1,108 +1,5 @@
 namespace LGUI
 {
-
-    void TableColumn::addRow(std::string& text, Window* window, int textSize)
-    {
-        fields.push_back(InputBox(x, y+getHight(), 50, 20, text, background, border, window, textSize));
-        fields.back().setBorder(border,0);
-    }
-
-    std::string TableColumn::getText(int row)
-    {
-        if(row < fields.size())
-        {
-            return fields.at(row).getText();
-        }
-        return "";
-    }
-
-    int TableColumn::getWidth()
-    {
-        int max = 0;
-        for(int i = 0; i < fields.size(); i++)
-        {
-            if(fields.at(i).getRect().w > max)
-            {
-                max = fields.at(i).getRect().w;
-            }
-        }
-        width = max;
-        return max;
-    }
-
-    void TableColumn::setText(int row, std::string& text, SDL_Renderer* renderer, int textSize)
-    {
-        if(row < fields.size())
-        {
-            fields.at(row).setText(text, renderer, textSize);
-            width = fields.at(row).getRect().w;
-        }
-    }
-
-    void TableColumn::addRow(Window* window, int textSize)
-    {
-        std::string s = " ";
-        addRow(s, window, textSize);
-    }
-
-    bool TableColumn::update(Window* window)
-    {
-        if(!isHidden())
-        {
-            SDL_Point p[2];
-            int w = getWidth();
-            int h = 0;
-            for(int i = 0; i < fields.size(); i++)
-            {
-                fields.at(i).update(window);
-                h += fields.at(i).getRect().h;
-                p[0].x = x;
-                p[0].y = y + h;
-                p[1].x = x + w;
-                p[1].y = y + h;
-                window->setColor(border);
-                if(i + 1 < fields.size())
-                {
-                    //SDL_RenderDrawLines(window->getRenderer(), p, 2);
-                    SDL_Rect rec = {p[0].x, p[1].y, w, 1};
-                    SDL_RenderDrawRect(window->getRenderer(), &rec);
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
-    bool TableColumn::update(Window* window, SDL_Event& event)
-    {
-        if(!isHidden() && !isEnabled())
-        {
-            return update(window);
-        }
-        if(isEnabled())
-        {
-            SDL_Point p[2];
-            int w = getWidth();
-            int h = 0;
-            for(int i = 0; i < fields.size(); i++)
-            {
-                fields.at(i).update(window, event);
-                h += fields.at(i).getRect().h;
-                p[0].x = x;
-                p[0].y = y + h;
-                p[1].x = x + w;
-                p[1].y = y + h;
-                window->setColor(border);
-                if(i + 1 < fields.size())
-                {
-                    SDL_RenderDrawLines(window->getRenderer(), p, 2);
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
     Table::Table(int x, int y, RGBA colorFill, RGBA colorBorder, Window* window, int textSize = 12)
     {
         defaultTextSize = textSize;
@@ -114,6 +11,14 @@ namespace LGUI
         border = colorBorder;
         tableWindow = window;
         update(window);
+    }
+
+    void Table::setText(int row, int column, std::string text)
+    {
+        if(row*columns+column < cells.size())
+        {
+            cells[row*columns+column].setText(text, tableWindow->getRenderer(), defaultTextSize);     
+        }
     }
 
     bool Table::update(Window* window)
@@ -129,15 +34,31 @@ namespace LGUI
         int h = 0;
         int w = 0;
         
-        for(int i = 0; i < columns.size(); i++)
+        for(int i = 0; i < cells.size(); i++)
         {
-            columns.at(i).update(window);
-            h = columns.at(i).getHight();
-            w = columns.at(i).getWidth();
+            cells[i].update(window);
+        }
+        for(int i = 1; i < columns; i++)
+        {
+            h = box.h;
+            w += (cells[i].getRect().x-box.x);
+            w -= (cells[i-1].getRect().x-box.x);
             p[0].x = box.x+w;
             p[0].y = box.y;
             p[1].x = box.x+w;
             p[1].y = box.y+h;
+            window->setColor(border);
+            SDL_RenderDrawLines(window->getRenderer(),p ,2);
+        }
+        h = 0;
+        w = box.w-1;
+        for(int i = 1; i <= rows; i++)
+        {
+            h += (cells[i*columns].getRect().y-cells[(i-1)*columns].getRect().y);
+            p[0].x = box.x;
+            p[0].y = box.y + h;
+            p[1].x = box.x+w;
+            p[1].y = box.y + h;
             window->setColor(border);
             SDL_RenderDrawLines(window->getRenderer(),p ,2);
         }
@@ -164,15 +85,31 @@ namespace LGUI
             int h = 0;
             int w = 0;
             
-            for(int i = 0; i < columns.size(); i++)
+            for(int i = 0; i < cells.size(); i++)
             {
-                columns.at(i).update(window, event);
-                h = columns.at(i).getHight();
-                w = columns.at(i).getWidth();
+                cells[i].update(window, event);
+            }
+            for(int i = 1; i < columns; i++)
+            {
+                h = box.h;
+                w += (cells[i].getRect().x-box.x);
+                w -= (cells[i-1].getRect().x-box.x);
                 p[0].x = box.x+w;
                 p[0].y = box.y;
                 p[1].x = box.x+w;
                 p[1].y = box.y+h;
+                window->setColor(border);
+                SDL_RenderDrawLines(window->getRenderer(),p ,2);
+            }
+            h = 0;
+            w = box.w-1;
+            for(int i = 1; i <= rows; i++)
+            {
+                h += (cells[i*columns].getRect().y-cells[(i-1)*columns].getRect().y);
+                p[0].x = box.x;
+                p[0].y = box.y + h;
+                p[1].x = box.x+w;
+                p[1].y = box.y + h;
                 window->setColor(border);
                 SDL_RenderDrawLines(window->getRenderer(),p ,2);
             }
@@ -206,6 +143,17 @@ namespace LGUI
                     if(event.button.y >= box.y && event.button.y <= box.y+box.h)
                     {
 
+                    }
+                }
+            }
+            if(event.type == SDL_KEYDOWN)
+            {
+                for(int i = 0; i < cells.size(); i++)
+                {
+                    if(cells[i].isSelected())
+                    {
+                        resize();
+                        break;
                     }
                 }
             }
