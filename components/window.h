@@ -97,7 +97,7 @@ namespace LGUI
                         }
                     }
                 }
-                else if(components.at(i)->getId() == id)
+                if(components.at(i)->getId() == id)
                 {
                     return components.at(i);
                 }
@@ -121,7 +121,7 @@ namespace LGUI
                         }
                     }
                 }
-                else if(components.at(i)->rectIsInBorders(area))
+                if(components.at(i)->rectIsInBorders(area))
                 {
                     results.push_back(components.at(i));
                 }
