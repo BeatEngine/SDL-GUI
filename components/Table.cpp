@@ -17,7 +17,8 @@ namespace LGUI
     {
         if(row*columns+column < cells.size())
         {
-            cells[row*columns+column].setText(text, tableWindow->getRenderer(), cells[row*columns+column].getTextSize());     
+            cells[row*columns+column].setText(text, tableWindow->getRenderer(), cells[row*columns+column].getTextSize());
+            resize();
         }
     }
 
@@ -48,6 +49,7 @@ namespace LGUI
                 }
             }
         }
+        resize();
     }
 
     bool Table::update(Window* window)

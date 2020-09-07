@@ -56,11 +56,35 @@ class Table: public UIComponent
 
     void resize()
     {
+
+        int c = 0;
+        int wmax = 0;
+        int hmax = 0;
+        for(int i = 0; i < rows; i++)
+        {
+            wmax = 0;
+            for(c = 0; c < columns; c++)
+            {
+                if(cells[i*columns+c].getRect().w > wmax)
+                {
+                    wmax = cells[i*columns+c].getRect().w;
+                }
+                if(cells[i*columns+c].getRect().h > hmax)
+                {
+                    hmax = cells[i*columns+c].getRect().h;
+                }
+            }
+            for(c = 0; c < columns; c++)
+            {
+                cells[i*columns+c].setSize(wmax, hmax);
+            }
+        }
+
         int mw = 0;
         int mh = 0;
         int w = 0;
         int h = 0;
-        int c;
+        //int c;
         for(int r = 0; r <= rows; r++)
         {
             w = 0;

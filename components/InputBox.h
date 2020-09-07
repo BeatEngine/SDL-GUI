@@ -66,6 +66,12 @@ class InputBox: public UIComponent
         return box;
     }
 
+    void setSize(int w, int h)
+    {
+        box.w = w;
+        box.h = h;
+    }
+
     InputBox(InputBox* other)
     {
         *this = *other;
