@@ -187,10 +187,10 @@ namespace LGUI
         box.h = hight;
         fill = colorFill;
         border = colorBorder;
-        
         this->setTextColor(RGBA(~fill.r, ~fill.g, ~fill.b, 255), textSize, window->getRenderer());
         this->text.setPosition(x+5, y+hight/2-(textSize*4/3)/2);
-        this->setText(text, window->getRenderer(), 12);
+        this->setText(text, window->getRenderer(), textSize);
+        setDrawBordersRect(box);
         this->update(window);
         //window->update();
         this->text.setBackground(fill, window->getRenderer());

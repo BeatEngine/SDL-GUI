@@ -17,7 +17,36 @@ namespace LGUI
     {
         if(row*columns+column < cells.size())
         {
-            cells[row*columns+column].setText(text, tableWindow->getRenderer(), defaultTextSize);     
+            cells[row*columns+column].setText(text, tableWindow->getRenderer(), cells[row*columns+column].getTextSize());     
+        }
+    }
+
+    void Table::sortTable(int column)
+    {
+        std::vector<SortStruct> rowsOfColumn;
+        for(int i = 1; i <= rows; i++)
+        {
+            rowsOfColumn.push_back(SortStruct(cells[i*columns+column].getText(), i));
+        }
+        std::sort(rowsOfColumn.begin(), rowsOfColumn.begin()+rowsOfColumn.size(), SortStruct::compare);
+        //std::qsort(rowsOfColumn.data(), sizeof(SortStruct), rowsOfColumn.size(),SortStruct::compareq);
+        for(int r = 1; r <= rows; r++)
+        {
+            for(int f = 0; f <= rowsOfColumn.size()/2; f++)
+            {
+                if(rowsOfColumn[f].oldIndex == r && f+1 != r)
+                {
+                    for(int c = 0; c < columns; c++)
+                    {
+                        std::string tmp = cells[r*columns+c].getText();
+                        std::string tx = cells[(f+1)*columns+c].getText();
+                        //printf("%s <--> %s\n", tmp.c_str(), tx.c_str());
+                        cells[r*columns+c].setText(tx, tableWindow->getRenderer());
+                        cells[(f+1)*columns+c].setText(tmp, tableWindow->getRenderer());
+                    }
+                    break;
+                }
+            }
         }
     }
 
@@ -126,13 +155,25 @@ namespace LGUI
         }
         if(isEnabled())
         {
-            if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+            if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && sortOnHeadClick)
             {
                 if(event.button.x >= box.x && event.button.x <= box.x+box.w)
                 {
-                    if(event.button.y >= box.y && event.button.y <= box.y+box.h)
+                    if(event.button.y >= box.y && event.button.y <= box.y+cells[0].getRect().h)
                     {
-
+                        SDL_Rect mouse;
+                        mouse.x = event.button.x;
+                        mouse.y = event.button.y;
+                        mouse.w = 0;
+                        mouse.h = 0;
+                        for(int c = 0; c < columns; c++)
+                        {
+                            if(cells[c].rectIsInBorders(mouse))
+                            {
+                                sortTable(c);
+                                break;
+                            }
+                        }
                     }
                 }
             }

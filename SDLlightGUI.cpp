@@ -187,15 +187,19 @@ int main(int args, char** arg)
     image1->setOnMouseMove(imageOnMouseMove);
 
     LGUI::Table* table1 = new LGUI::Table(400, 600, LGUI::RGBA(240, 240, 240, 255), LGUI::RGBA(0, 0, 0, 255), &window);
-    table1->addColumn("Name");
-    table1->addColumn("Size");
-    table1->addColumn("Weight");
-    char* dataRow[] = {"Test User", "89", "80"};
+    table1->addColumn("Name", 14);
+    table1->addColumn("Size", 14);
+    table1->addColumn("Weight", 14);
+    char* dataRow[] = {"Test User", "189", "80"};
     table1->addRow(dataRow, 3);
-    char* dataRow2[] = {"Master", "1000", "100"};
+    char* dataRow2[] = {"Master", "190", "100"};
     table1->addRow(dataRow2, 3);
-
+    char* dataRow3[] = {"Andreas", "210", "99"};
+    table1->addRow(dataRow3, 3);
+    
     table1->refresh();
+
+    table1->setSortableOnHeadClick(true);
 
     window.addComponent(container);
 

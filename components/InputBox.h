@@ -119,11 +119,11 @@ class InputBox: public UIComponent
         TTF_SizeText(font, text.c_str(), &tw, &th);
         if(box.w == 0)
         {
-            box.w = tw + fontSize*(2/3.0f);
+            box.w = tw + fontSize;
         }
         if(box.h == 0)
         {
-            box.h = th;
+            box.h = th+2;
         }
         while(text.length() > 0 && tw > box.w - fontSize*(2/3.0f))
         {
@@ -150,6 +150,7 @@ class InputBox: public UIComponent
         box.x = x;
         box.y = y;
         text.setPositionCenter(box.x + box.w/2,box.y + box.h/2);
+        setDrawBordersRect(box);
     }
 
     void setTextColor(RGBA color, int fontSize, SDL_Renderer* renderer)

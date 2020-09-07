@@ -1,4 +1,43 @@
 
+class SortStruct
+{
+    public:
+    SortStruct(std::string dat, int indx)
+    {
+        data = dat;
+        oldIndex = indx;
+    }
+    std::string data;
+    int oldIndex;
+
+    static bool isNumber(std::string& str)
+    {
+        if(str.size() <= 0)
+        {
+            return false;
+        }
+        for(int i = 0; i < str.length(); i++)
+        {
+            if(str[i] != 32 && (str[i] < 48 || str[i] > 57) && str[i] != '.')
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static bool compare(SortStruct& a, SortStruct& b)
+    {
+        if(isNumber(a.data) && isNumber(b.data))
+        {
+            //printf("%d\n", (int)((strtof(a.data.c_str(),0)-strtof(b.data.c_str(),0))));
+            return strtof(a.data.c_str(),0) < strtof(b.data.c_str(),0);//(int)((strtof(a.data.c_str(),0)-strtof(b.data.c_str(),0)));
+        }
+        return a.data.compare(b.data) < 0;
+    }
+
+};
+
 class Table: public UIComponent
 {
 
@@ -9,6 +48,7 @@ class Table: public UIComponent
     int defaultTextSize = 12;
     UIComponent* optionalParent;
     Window* tableWindow = 0;
+    bool sortOnHeadClick = false;
 
     std::vector<InputBox> cells;
     int rows = 0;
@@ -96,6 +136,20 @@ class Table: public UIComponent
         return defaultTextSize;
     }
 
+    void sortTable(int column);
+
+    void setSortableOnHeadClick(bool sortable)
+    {
+        sortOnHeadClick = sortable;
+        if(sortOnHeadClick)
+        {
+            for(int c = 0; c < columns; c++)
+            {
+                cells[c].setEnabled(false);
+            }
+        }
+    }
+
     void setBackground(RGBA color)
     {
         fill = color;
@@ -139,26 +193,44 @@ class Table: public UIComponent
         return borderSize;
     }
 
-    void addColumn(std::string name)
+    void addColumn(std::string name, int textSize = -1)
     {
+        if(textSize == -1)
+        {
+            textSize = defaultTextSize;
+        }
         int p = cells.size();
         while (p >= columns)
         {
             if(p == 0)
             {
-                cells.insert(cells.begin()+p, InputBox(0, 0, 0, 20, name, fill, border, tableWindow, defaultTextSize));
+                if(textSize <= 12)
+                {
+                    cells.insert(cells.begin()+p, InputBox(0, 0, 0, 20, name, fill, border, tableWindow, textSize));
+                }
+                else
+                {
+                    cells.insert(cells.begin()+p, InputBox(0, 0, 0, 0, name, fill, border, tableWindow, textSize));
+                }
                 cells[p].setBorder(border, 0);
             }
             else if(p % columns == 0)
             {
                 if(p <= columns)
                 {
-                    cells.insert(cells.begin()+p, InputBox(0, 0, 0, 20, name, fill, border, tableWindow, defaultTextSize));
+                    if(textSize <= 12)
+                    {
+                        cells.insert(cells.begin()+p, InputBox(0, 0, 0, 20, name, fill, border, tableWindow, textSize));
+                    }
+                    else
+                    {
+                        cells.insert(cells.begin()+p, InputBox(0, 0, 0, 0, name, fill, border, tableWindow, textSize));
+                    }
                     cells[p].setBorder(border, 0);
                 }
                 else
                 {
-                    cells.insert(cells.begin()+p, InputBox(0, 0, 60, 20, "", fill, border, tableWindow, defaultTextSize));
+                    cells.insert(cells.begin()+p, InputBox(0, 0, 60, 0, "", fill, border, tableWindow, textSize));
                     cells[p].setBorder(border, 0);
                 }
             }
